@@ -1,0 +1,101 @@
+/* Estilo para el navbar */
+.navbar {
+    background-color: #8F141B !important;
+}
+
+.navbar-text {
+    font-size: 1.25rem;
+    color: white;
+}
+
+.navbar-brand img {
+    height: 40px;
+}
+
+/* Estilo para el sidebar */
+.sidebar {
+    height: 100vh;
+    background-color: #8F141B;
+    color: white;
+    padding-top: 20px;
+    position: fixed;
+    width: 200px; /* Ancho por defecto */
+    transition: width 0.3s;
+    overflow: hidden;
+    
+}
+
+.sidebar.collapsed {
+    width: 50px; /* Ancho mínimo cuando está colapsado */
+}
+
+/* Contenedor del título y botón */
+.sidebar .d-flex {
+    padding: 10px 15px;
+}
+
+/* Estilo para el texto "Menú" */
+.menu-title {
+    color: white;
+    font-size: 1.25rem;
+    margin-right: 10px;
+}
+
+.sidebar.collapsed .menu-title {
+    display: none; /* Ocultar el texto "Menú" al colapsar */
+}
+
+/* Botón de colapso dentro del sidebar */
+.collapse-btn {
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: all 0.3s; /* Transición suave para el movimiento */
+}
+
+.sidebar.collapsed .collapse-btn {
+    margin-right: 0; /* Asegura que el botón esté alineado correctamente */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    text-align: center;
+}
+
+/* Estilo para los enlaces del sidebar */
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+    white-space: nowrap; /* Evita que el texto se corte en varias líneas */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Agrega puntos suspensivos al texto oculto */
+    opacity: 1;
+    transition: opacity 0.3s; /* Transición suave para ocultar el texto */
+}
+
+.sidebar.collapsed a {
+    opacity: 0; /* Oculta completamente el texto del menú */
+}
+
+/* Hover para los enlaces */
+.sidebar a:hover {
+    background-color: #A61722;
+}
+
+/* Ajuste para el contenido principal */
+.content {
+    margin-left: 200px; /* Espacio reservado para el sidebar */
+    padding: 20px;
+    transition: margin-left 0.3s;
+}
+
+.content.collapsed {
+    margin-left: 50px; /* Ajuste cuando el sidebar está colapsado */
+}
+
+/* Ajuste para el contenido cuando el navbar es fijo */
+body {
+    padding-top: 60px; /* Ajusta este valor según la altura de tu navbar */
+}

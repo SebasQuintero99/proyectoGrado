@@ -1,0 +1,117 @@
+<div>
+    <h1>Gestión de Horarios</h1>
+    <!-- Formulario de Agregar/Editar Horario -->
+    <form action="<%= scheduleToEdit ? '/schedules/update' : '/schedules/add' %>" method="POST" class="mb-4">
+        <% if (scheduleToEdit) { %>
+            <input type="hidden" name="id_horario" value="<%= scheduleToEdit.id_horario %>">
+        <% } %>
+        <div class="mb-3">
+            <!-- Selector del día -->
+            <label for="dia" class="form-label">Día</label>
+            <select 
+                name="dia" 
+                id="dia" 
+                class="form-select w-25" 
+                required>
+                <option value="">Seleccione un día</option>
+                <option value="Lunes" <%= scheduleToEdit && scheduleToEdit.dia === 'Lunes' ? 'selected' : '' %>>Lunes</option>
+                <option value="Martes" <%= scheduleToEdit && scheduleToEdit.dia === 'Martes' ? 'selected' : '' %>>Martes</option>
+                <option value="Miércoles" <%= scheduleToEdit && scheduleToEdit.dia === 'Miércoles' ? 'selected' : '' %>>Miércoles</option>
+                <option value="Jueves" <%= scheduleToEdit && scheduleToEdit.dia === 'Jueves' ? 'selected' : '' %>>Jueves</option>
+                <option value="Viernes" <%= scheduleToEdit && scheduleToEdit.dia === 'Viernes' ? 'selected' : '' %>>Viernes</option>
+                <option value="Sábado" <%= scheduleToEdit && scheduleToEdit.dia === 'Sábado' ? 'selected' : '' %>>Sábado</option>
+                <option value="Domingo" <%= scheduleToEdit && scheduleToEdit.dia === 'Domingo' ? 'selected' : '' %>>Domingo</option>
+            </select>
+            <!-- Clase w-25 ajusta el ancho del selector -->
+        </div>
+        <div class="mb-3">
+            <!-- Input para la hora de inicio -->
+            <label for="hora_inicio" class="form-label">Hora Inicio</label>
+            <input 
+                type="time" 
+                name="hora_inicio" 
+                id="hora_inicio" 
+                class="form-control w-25" 
+                value="<%= scheduleToEdit ? scheduleToEdit.hora_inicio : '' %>" 
+                required>
+            <!-- Clase w-25 ajusta el ancho del input -->
+        </div>
+        <div class="mb-3">
+            <!-- Input para la hora de fin -->
+            <label for="hora_fin" class="form-label">Hora Fin</label>
+            <input 
+                type="time" 
+                name="hora_fin" 
+                id="hora_fin" 
+                class="form-control w-25" 
+                value="<%= scheduleToEdit ? scheduleToEdit.hora_fin : '' %>" 
+                required>
+            <!-- Clase w-25 ajusta el ancho del input -->
+        </div>
+        <button type="submit" class="btn <%= scheduleToEdit ? 'btn-warning' : 'btn-success' %>">
+            <%= scheduleToEdit ? 'Actualizar' : 'Agregar' %>
+        </button>
+        <% if (scheduleToEdit) { %>
+            <a href="/schedules" class="btn btn-secondary mt-2">Cancelar</a>
+        <% } %>
+    </form>
+
+    <!-- Tabla de Horarios -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Día</th>
+                <th>Hora Inicio</th>
+                <th>Hora Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% schedules.forEach((schedule, index) => { %>
+            <tr>
+                <td><%= index + 1 %></td>
+                <td><%= schedule.dia %></td>
+                <td><%= schedule.hora_inicio %></td>
+                <td><%= schedule.hora_fin %></td>
+                <td>
+                    <a href="/schedules?editId=<%= schedule.id_horario %>" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <button 
+                    class="btn btn-danger btn-sm delete-btn" 
+                    data-id="<%= schedule.id_horario %>" 
+                    data-entity="schedules">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    <!-- Componente de paginación -->
+<nav aria-label="Paginación de Horarios">
+    <ul class="pagination justify-content-left mt-4">
+        <!-- Botón Previous -->
+        <li class="page-item <%= pagination.currentPage === 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= pagination.currentPage - 1 %>" tabindex="-1" aria-disabled="<%= pagination.currentPage === 1 %>">
+                Previous
+            </a>
+        </li>
+
+        <!-- Páginas -->
+        <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+            <li class="page-item <%= pagination.currentPage === i ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+            </li>
+        <% } %>
+
+        <!-- Botón Next -->
+        <li class="page-item <%= pagination.currentPage === pagination.totalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= pagination.currentPage + 1 %>">
+                Next
+            </a>
+        </li>
+    </ul>
+</nav>
+</div>

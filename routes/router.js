@@ -1,0 +1,207 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../config/db'); // Ruta hacia tu configuración de la base de datos
+const paginationMiddleware = require('../middlewares/paginationMiddleware');
+const loginController = require('../controllers/loginController');
+const registerController = require('../controllers/registerController');
+const logoutController = require('../controllers/logoutController');
+const verifyToken = require('../middlewares/authMiddleware'); // Importar el middleware de autenticación
+const schedulesController = require('../controllers/schedulesController');
+const programController = require('../controllers/programController');
+const laboratoriesController = require('../controllers/laboratoriesController');
+const teacherController = require('../controllers/teacherController');
+const signatureController = require('../controllers/signatureController');
+
+// Ruta para la paginación de vistas
+
+router.get(
+    '/programs',
+    verifyToken, // Primero verifica el token
+    paginationMiddleware(db.query.bind(db), 'programa', 10), // Luego aplica la paginación
+    programController.listPrograms // Finalmente maneja la lógica del controlador
+);
+
+// Ruta para la paginación de laboratorios
+router.get(
+    '/laboratories',
+    verifyToken, // Primero verifica el token
+    paginationMiddleware(db.query.bind(db), 'laboratorio', 10), // Luego aplica la paginación
+    laboratoriesController.listLaboratories // Finalmente maneja la lógica del controlador
+    
+);
+
+router.get(
+    '/schedules',
+    verifyToken, // Middleware para verificar el token
+    paginationMiddleware(db.query.bind(db), 'horario', 10), // Middleware de paginación
+    schedulesController.listSchedules // Método del controlador
+);
+
+router.get(
+    '/teachers',
+    verifyToken, // Middleware para verificar el token
+    paginationMiddleware(db.query.bind(db), 'docente', 10), // Middleware de paginación
+    teacherController.listTeachers // Método del controlador
+);
+
+router.get(
+    '/signatures',
+    verifyToken, // Middleware para verificar el token
+    paginationMiddleware(db.query.bind(db), 'asignatura', 10), // Middleware de paginación
+    signatureController.listSignatures // Método del controlador
+);
+
+
+// Ruta para listar programas (y cargar el formulario de edición si corresponde)
+router.get('/programs', verifyToken, programController.listPrograms);
+
+
+// Ruta para agregar un programa
+router.post('/programs/add', verifyToken, programController.addProgram);
+
+// Ruta para actualizar un programa
+router.post('/programs/update', verifyToken, programController.updateProgram);
+
+// Ruta para eliminar un programa
+router.get('/programs/delete/:id', verifyToken, programController.deleteProgram);
+
+// --- Rutas de Horarios --->
+
+
+// Ruta para listar horarios
+router.get('/schedules', verifyToken, schedulesController.listSchedules);
+
+// Ruta para agregar un horario
+router.post('/schedules/add', verifyToken, schedulesController.addSchedule);
+
+// Ruta para actualizar un horario
+router.post('/schedules/update', verifyToken, schedulesController.updateSchedule);
+
+// Ruta para eliminar un horario
+router.get('/schedules/delete/:id', verifyToken, schedulesController.deleteSchedule);
+
+
+
+// --- Rutas de Laboratorios --->
+
+// Ruta para listar laboratorios
+router.get('/laboratories', verifyToken, laboratoriesController.listLaboratories);
+
+// Ruta para agregar un laboratorio
+router.post('/laboratories/add', verifyToken, laboratoriesController.addLaboratory);
+
+// Ruta para actualizar un laboratorio
+router.post('/laboratories/update', verifyToken, laboratoriesController.updateLaboratory);
+
+// Ruta para eliminar un laboratorio
+router.get('/laboratories/delete/:id', verifyToken, laboratoriesController.deleteLaboratory);
+
+
+
+// ----Rutas de Asignaturas--->
+
+// Ruta para listar asignaturas
+router.get('/signatures', verifyToken, signatureController.listSignatures);
+
+// Ruta para agregar asignaturas
+router.post('/signatures/add', verifyToken, signatureController.addSignature);
+
+// Ruta para actualizar asignaturas
+router.post('/signatures/update', verifyToken, signatureController.updateSignature);
+
+// Ruta para eliminar asignaturas
+router.get('/signatures/delete/:id', verifyToken, signatureController.deleteSignature);
+
+
+
+// --- Rutas de Docentes --->
+
+// Ruta para listar docentes
+router.get('/teachers', verifyToken, teacherController.listTeachers);
+
+// Ruta para agregar un docente
+router.post('/teachers/add', verifyToken, teacherController.addTeacher);
+
+// Ruta para actualizar un docente
+router.post('/teachers/update', verifyToken, teacherController.updateTeacher);
+
+// Ruta para eliminar un docente
+router.get('/teachers/delete/:id', verifyToken, teacherController.deleteTeacher);
+
+
+
+
+router.get('/login', loginController.renderLogin);
+router.post('/login', loginController.handleLogin);
+
+// Rutas de Registro
+router.get('/register', registerController.renderRegister);
+router.post('/register', registerController.handleRegister);
+
+// Ruta protegida del Dashboard
+router.get('/dashboard', verifyToken, (req, res) => {
+    res.render('dashboard', { user: req.user }); // Pasar datos del usuario a la vista
+    
+    
+    // console.log('Usuario autenticado:', req.user);
+    
+});
+
+// Ruta de Cierre de Sesión
+router.get('/logout', logoutController.handleLogout);
+
+// Ruta protegida para Home
+router.get('/home', verifyToken, (req, res) => {
+    res.render('dashboard', { 
+        user: req.user, 
+        content: 'home' // Solo pasa el nombre de la vista
+
+        
+        
+    });
+     // console.log('Usuario autenticado:', req.user);
+});
+
+
+router.get('/signatures', verifyToken, (req, res) => {
+    res.render('dashboard', { 
+        user: req.user, 
+        content: 'signatures' // Cargará views/signatures.ejs
+    });
+});
+
+// router.get('/programs', verifyToken, (req, res) => {
+//     res.render('dashboard', { 
+//         user: req.user, 
+//         content: 'programs' // Cargará views/signatures.ejs
+//     });
+// });
+
+// router.get('/teachers', verifyToken, (req, res) => {
+//     res.render('dashboard', { 
+//         user: req.user, 
+//         content: 'teachers' // Cargará views/signatures.ejs
+//     });
+// });
+router.get('/schedules', verifyToken, (req, res) => {
+    res.render('dashboard', { 
+        user: req.user, 
+        content: 'schedules' // Cargará views/signatures.ejs
+    });
+});
+router.get('/laboratories', verifyToken, (req, res) => {
+    res.render('dashboard', { 
+        user: req.user, 
+        content: 'laboratories' // Cargará views/signatures.ejs
+    });
+});
+
+router.get('/rooms', verifyToken, (req, res) => {
+    res.render('dashboard', { 
+        user: req.user, 
+        content: 'rooms' // Cargará views/signatures.ejs
+    });
+});
+
+
+module.exports = router;

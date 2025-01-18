@@ -1,0 +1,110 @@
+<div>
+    <h1>Gestión de Laboratorios</h1>
+    <!-- Formulario de Agregar/Editar Laboratorio -->
+    <form action="<%= laboratoryToEdit ? '/laboratories/update' : '/laboratories/add' %>" method="POST" class="mb-4">
+        <% if (laboratoryToEdit) { %>
+            <input type="hidden" name="id_laboratorio" value="<%= laboratoryToEdit.id_laboratorio %>">
+        <% } %>
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input 
+                type="text" 
+                name="nombre" 
+                class="form-control w-50" 
+                placeholder="Nombre del laboratorio" 
+                value="<%= laboratoryToEdit ? laboratoryToEdit.nombre : '' %>" 
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="capacidad" class="form-label">Capacidad</label>
+            <input 
+                type="number" 
+                name="capacidad" 
+                class="form-control w-25" 
+                placeholder="Capacidad" 
+                value="<%= laboratoryToEdit ? laboratoryToEdit.capacidad : '' %>" 
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="id_docente" class="form-label">Docente</label>
+            <select name="id_docente" id="id_docente" class="form-select w-50" required>
+                <option value="">Seleccione un docente</option>
+                <% teachers.forEach(teacher => { %>
+                    <option value="<%= teacher.id_docente %>" <%= laboratoryToEdit && laboratoryToEdit.id_docente === teacher.id_docente ? 'selected' : '' %>>
+                        <%= teacher.nombre %> (<%= teacher.email %>)
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+        <button type="submit" class="btn <%= laboratoryToEdit ? 'btn-warning' : 'btn-success' %>">
+            <%= laboratoryToEdit ? 'Actualizar' : 'Agregar' %>
+        </button>
+        <% if (laboratoryToEdit) { %>
+            <a href="/laboratories" class="btn btn-secondary mt-2">Cancelar</a>
+        <% } %>
+    </form>
+
+    <!-- Tabla de Laboratorios -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Capacidad</th>
+                <th>Docente</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% laboratories.forEach((laboratory, index) => { %>
+            <tr>
+                <td><%= index + 1 %></td>
+                <td><%= laboratory.nombre %></td>
+                <td><%= laboratory.capacidad %></td>
+                <td><%= laboratory.docente_nombre || 'No asignado' %></td>
+                <td><%= laboratory.docente_email || 'No disponible' %></td>
+                <td><%= laboratory.docente_telefono || 'No disponible' %></td>
+                <td>
+                    <a href="/laboratories?editId=<%= laboratory.id_laboratorio %>" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <!-- Botón con evento SweetAlert2 -->
+                    <button 
+                    class="btn btn-danger btn-sm delete-btn" 
+                    data-id="<%= laboratory.id_laboratorio %>" 
+                    data-entity="laboratories">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    <!-- Componente de paginación -->
+    <nav aria-label="Paginación de Laboratorios">
+        <ul class="pagination justify-content-left mt-4">
+            <!-- Botón Previous -->
+            <li class="page-item <%= pagination.currentPage === 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="?page=<%= pagination.currentPage - 1 %>" tabindex="-1" aria-disabled="<%= pagination.currentPage === 1 %>">
+                    Previous
+                </a>
+            </li>
+
+            <!-- Páginas -->
+            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                <li class="page-item <%= pagination.currentPage === i ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+
+            <!-- Botón Next -->
+            <li class="page-item <%= pagination.currentPage === pagination.totalPages ? 'disabled' : '' %>">
+                <a class="page-link" href="?page=<%= pagination.currentPage + 1 %>">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>

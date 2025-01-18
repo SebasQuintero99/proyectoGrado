@@ -1,0 +1,82 @@
+<div>
+    <h1>Gestión de Programas</h1>
+    <!-- Formulario de Agregar/Editar Programa -->
+    <form action="<%= programToEdit ? '/programs/update' : '/programs/add' %>" method="POST" class="mt-3 mb-4">
+        <% if (programToEdit) { %>
+            <input type="hidden" name="id_programa" value="<%= programToEdit.id_programa %>">
+        <% } %>
+        <div class="input-group form-control w-50">
+            <input 
+                type="text" 
+                name="nombre_programa" 
+                class="form-control" 
+                placeholder="Nombre del programa" 
+                value="<%= programToEdit ? programToEdit.nombre_programa : '' %>" 
+                required>
+            <button type="submit" class="btn <%= programToEdit ? 'btn-warning' : 'btn-success' %> ">
+                <%= programToEdit ? 'Actualizar' : 'Agregar' %>
+            </button>
+        </div>
+        <% if (programToEdit) { %>
+            <a href="/programs" class="btn btn-secondary mt-2">Cancelar</a>
+        <% } %>
+    </form>
+
+    <!-- Tabla de Programas -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre del Programa</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% programs.forEach((program, index) => { %>
+            <tr>
+                <td><%= index + 1 %></td>
+                <td><%= program.nombre_programa %></td>
+                <td>
+                    <a href="/programs?editId=<%= program.id_programa %>" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <!-- Botón con evento SweetAlert2 -->
+                    <button 
+                        class="btn btn-danger btn-sm delete-btn" 
+                        data-id="<%= program.id_programa %>" 
+                        data-entity="programs"
+                    >
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <!-- Componente de paginación -->
+    <nav aria-label="Paginación de Programas">
+        <ul class="pagination justify-content-left mt-4">
+            <!-- Botón Previous -->
+            <li class="page-item <%= pagination.currentPage === 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="?page=<%= pagination.currentPage - 1 %>" tabindex="-1" aria-disabled="<%= pagination.currentPage === 1 %>">
+                    Previous
+                </a>
+            </li>
+
+            <!-- Páginas -->
+            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                <li class="page-item <%= pagination.currentPage === i ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+
+            <!-- Botón Next -->
+            <li class="page-item <%= pagination.currentPage === pagination.totalPages ? 'disabled' : '' %>">
+                <a class="page-link" href="?page=<%= pagination.currentPage + 1 %>">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
