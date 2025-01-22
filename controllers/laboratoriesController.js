@@ -1,10 +1,8 @@
 const db = require('../config/db'); // Conexión a la base de datos
 
 
-// Listar laboratorios con paginación
-// Listar laboratorios con paginación
 exports.listLaboratories = async (req, res) => {
-    const itemsPerPage = 10; // Número de registros por página
+    const itemsPerPage = 100; // Número de registros por página
     const page = parseInt(req.query.page) || 1; // Página actual
     const offset = (page - 1) * itemsPerPage;
 
@@ -38,7 +36,7 @@ exports.listLaboratories = async (req, res) => {
         // Renderizar la vista con los datos necesarios
         res.render('dashboard', {
             user: req.user,
-            content: 'laboratories',
+            content: 'laboratories', // Esta es la vista de laboratorios
             laboratories,
             laboratoryToEdit, // Pasamos el laboratorio a editar (si corresponde)
             teachers, // Pasamos la lista de docentes para el selector

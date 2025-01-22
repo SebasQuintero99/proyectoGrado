@@ -99,3 +99,9 @@
 body {
     padding-top: 60px; /* Ajusta este valor según la altura de tu navbar */
 }
+
+.custom-button {
+    font-size: 1.5rem; /* Aumentar el tamaño del texto */
+    padding: 14px 28px; /* Relleno del botón */
+    border-radius: 10px; /* Bordes redondeados */
+  }

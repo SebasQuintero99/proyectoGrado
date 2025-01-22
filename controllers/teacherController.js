@@ -2,7 +2,7 @@ const db = require('../config/db'); // Conexión a la base de datos
 
 // Listar todos los docentes
 exports.listTeachers = async (req, res) => {
-    const itemsPerPage = 10; // Número de registros por página
+    const itemsPerPage = 1000; // Número de registros por página
     const page = parseInt(req.query.page) || 1; // Página actual
     const offset = (page - 1) * itemsPerPage;
 

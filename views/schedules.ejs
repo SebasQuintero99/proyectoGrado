@@ -57,7 +57,7 @@
     </form>
 
     <!-- Tabla de Horarios -->
-    <table class="table table-striped">
+    <table id="schedules" class="table table-striped" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
@@ -89,29 +89,32 @@
             <% }) %>
         </tbody>
     </table>
-    <!-- Componente de paginación -->
-<nav aria-label="Paginación de Horarios">
-    <ul class="pagination justify-content-left mt-4">
-        <!-- Botón Previous -->
-        <li class="page-item <%= pagination.currentPage === 1 ? 'disabled' : '' %>">
-            <a class="page-link" href="?page=<%= pagination.currentPage - 1 %>" tabindex="-1" aria-disabled="<%= pagination.currentPage === 1 %>">
-                Previous
-            </a>
-        </li>
 
-        <!-- Páginas -->
-        <% for (let i = 1; i <= pagination.totalPages; i++) { %>
-            <li class="page-item <%= pagination.currentPage === i ? 'active' : '' %>">
-                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
-            </li>
-        <% } %>
-
-        <!-- Botón Next -->
-        <li class="page-item <%= pagination.currentPage === pagination.totalPages ? 'disabled' : '' %>">
-            <a class="page-link" href="?page=<%= pagination.currentPage + 1 %>">
-                Next
-            </a>
-        </li>
-    </ul>
-</nav>
 </div>
+
+<script>
+
+    new DataTable('#schedules', {
+
+        layout: {
+   
+            topStart: {
+                buttons:  [
+
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="fa fa-file-excel-o"></i> Excel',
+                        titleAttr: 'Excel'
+                    },
+
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                        titleAttr: 'PDF'
+                    }
+                ]
+            }
+        }
+        
+    });
+    </script>

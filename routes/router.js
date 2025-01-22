@@ -12,7 +12,11 @@ const laboratoriesController = require('../controllers/laboratoriesController');
 const teacherController = require('../controllers/teacherController');
 const signatureController = require('../controllers/signatureController');
 
+
+
+
 // Ruta para la paginación de vistas
+router.get('/programs/filter', programController.filterPrograms);
 
 router.get(
     '/programs',
@@ -97,7 +101,6 @@ router.post('/laboratories/update', verifyToken, laboratoriesController.updateLa
 router.get('/laboratories/delete/:id', verifyToken, laboratoriesController.deleteLaboratory);
 
 
-
 // ----Rutas de Asignaturas--->
 
 // Ruta para listar asignaturas
@@ -138,14 +141,14 @@ router.post('/login', loginController.handleLogin);
 router.get('/register', registerController.renderRegister);
 router.post('/register', registerController.handleRegister);
 
-// Ruta protegida del Dashboard
-router.get('/dashboard', verifyToken, (req, res) => {
-    res.render('dashboard', { user: req.user }); // Pasar datos del usuario a la vista
+// // Ruta protegida del Dashboard
+// router.get('/dashboard', verifyToken, (req, res) => {
+//     res.render('home', { user: req.user }); // Pasar datos del usuario a la vista
     
     
-    // console.log('Usuario autenticado:', req.user);
+   
     
-});
+// });
 
 // Ruta de Cierre de Sesión
 router.get('/logout', logoutController.handleLogout);
@@ -159,48 +162,14 @@ router.get('/home', verifyToken, (req, res) => {
         
         
     });
-     // console.log('Usuario autenticado:', req.user);
+    //  console.log('Usuario autenticado:', req.user);
 });
 
 
-router.get('/signatures', verifyToken, (req, res) => {
-    res.render('dashboard', { 
-        user: req.user, 
-        content: 'signatures' // Cargará views/signatures.ejs
-    });
-});
 
-// router.get('/programs', verifyToken, (req, res) => {
-//     res.render('dashboard', { 
-//         user: req.user, 
-//         content: 'programs' // Cargará views/signatures.ejs
-//     });
-// });
-
-// router.get('/teachers', verifyToken, (req, res) => {
-//     res.render('dashboard', { 
-//         user: req.user, 
-//         content: 'teachers' // Cargará views/signatures.ejs
-//     });
-// });
-router.get('/schedules', verifyToken, (req, res) => {
-    res.render('dashboard', { 
-        user: req.user, 
-        content: 'schedules' // Cargará views/signatures.ejs
-    });
-});
-router.get('/laboratories', verifyToken, (req, res) => {
-    res.render('dashboard', { 
-        user: req.user, 
-        content: 'laboratories' // Cargará views/signatures.ejs
-    });
-});
-
-router.get('/rooms', verifyToken, (req, res) => {
-    res.render('dashboard', { 
-        user: req.user, 
-        content: 'rooms' // Cargará views/signatures.ejs
-    });
+// Ruta comodín al final para manejar rutas no definidas
+router.get('*', verifyToken, (req, res) => {
+    res.redirect('/home'); // Redirige a la página de inicio (home)
 });
 
 

@@ -1,45 +1,7 @@
 const db = require('../config/db'); // Conexión a la base de datos
 
-// // Listar todas las asignaturas
-// exports.listSignatures = async (req, res) => {
-//     try {
-//         const [signatures] = await db.query(`
-//             SELECT asignatura.*, docente.nombre AS docente_nombre, programa.nombre_programa
-//             FROM asignatura
-//             LEFT JOIN docente ON asignatura.id_docente = docente.id_docente
-//             LEFT JOIN programa ON asignatura.id_programa = programa.id_programa
-//         `); // Obtenemos todas las asignaturas con sus relaciones
-
-//         const [teachers] = await db.query('SELECT id_docente, nombre FROM docente'); // Lista de docentes
-//         const [programs] = await db.query('SELECT id_programa, nombre_programa FROM programa'); // Lista de programas
-
-//         const { editId } = req.query; // ID de la asignatura a editar (si corresponde)
-//         const { error } = req.query; // Mensaje de error (si corresponde)
-
-//         let signatureToEdit = null;
-//         if (editId) {
-//             const [rows] = await db.query('SELECT * FROM asignatura WHERE id_asignatura = ?', [editId]);
-//             signatureToEdit = rows.length > 0 ? rows[0] : null;
-//         }
-
-//         res.render('dashboard', {
-//             user: req.user || { email: 'Invitado' },
-//             content: 'signatures',
-//             signatures,
-//             signatureToEdit,
-//             teachers, // Enviar la lista de docentes
-//             programs, // Enviar la lista de programas
-//             error
-//         });
-//     } catch (error) {
-//         console.error('Error al obtener las asignaturas:', error);
-//         res.status(500).send('Hubo un error al obtener las asignaturas.');
-//     }
-// };
-// // Listar todas las asignaturas
-
 exports.listSignatures = async (req, res) => {
-    const itemsPerPage = 10; // Número de registros por página
+    const itemsPerPage = 1000; // Número de registros por página
     const page = parseInt(req.query.page) || 1; // Página actual
     const offset = (page - 1) * itemsPerPage;
 

@@ -6,7 +6,33 @@
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/styles.css" rel="stylesheet"> <!-- Enlace al archivo de estilos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"><!-- Font Awesome -->
+
+
+    <!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+<!-- Bootstrap -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/2.2.1/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.js"></script>
+
+<!-- DataTables Buttons -->
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.bootstrap5.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.colVis.min.js"></script>
+
+<!-- Additional Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
 </head>
 <body>
     <nav class="navbar navbar-expand-lg fixed-top">
@@ -27,7 +53,7 @@
                 </ul>
                 <!-- Texto con nombre del usuario -->
                 <span class="navbar-text">
-                    Bienvenido, <%= user ? user.email : 'Invitado' %>!
+                    Bienvenido, <%= user ? user.nombre : 'Invitado' %>!
                 </span>
             </div>
         </div>
@@ -44,12 +70,14 @@
         <a href="/laboratories">Laboratorios</a>
         <a href="/programs">Programas</a>
         <a href="/rooms">Gestión de Salones</a>
-    <!-- Ícono de cierre de sesión -->
-    <div class="mt-auto text-center">
-        <a href="/logout" class="btn btn-danger w-75 mb-3">
-            <i class="fas fa-sign-out-alt"></i>Salir <!-- Ícono de cerrar sesión -->
-        </a>
-    </div>
+            <!-- Ícono de cierre de sesión -->
+            <div class="mt-auto text-center">
+                <button id="logout-button" class="btn btn-danger w-75 mb-3">
+                    <i class="fas fa-sign-out-alt"></i> Salir <!-- Ícono de cerrar sesión -->
+                </button>
+            </div>
+
+
     </div>
 
         <!-- Contenido principal -->
@@ -62,5 +90,10 @@
     <script src="/js/sidebar.js"></script> <!-- Enlace al archivo JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/deleteHandler.js"></script>
+    <script src="/js/logoutAlert.js"></script>
+
+
+
+
 </body>
 </html>
