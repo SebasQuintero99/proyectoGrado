@@ -1,22 +1,9 @@
 const db = require('../config/db'); // Conexión a la base de datos
 
-// Listar horarios con paginación
 exports.listSchedules = async (req, res) => {
-    const itemsPerPage = 100; // Número de registros por página
-    const page = parseInt(req.query.page) || 1; // Página actual
-    const offset = (page - 1) * itemsPerPage;
-
     try {
-        // Contar el total de registros en la tabla horario
-        const [totalResults] = await db.query('SELECT COUNT(*) AS count FROM horario');
-        const totalItems = totalResults[0].count;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-        // Obtener los horarios para la página actual con paginación
-        const [schedules] = await db.query(`
-            SELECT * FROM horario
-            LIMIT ? OFFSET ?
-        `, [itemsPerPage, offset]);
+        // Obtener todos los horarios sin paginación
+        const [schedules] = await db.query('SELECT * FROM horario');
 
         const { editId } = req.query; // Capturamos el ID del horario a editar desde los parámetros de la URL
 
@@ -30,13 +17,8 @@ exports.listSchedules = async (req, res) => {
         res.render('dashboard', {
             user: req.user,
             content: 'schedules',
-            schedules,
-            scheduleToEdit, // Pasamos el horario a editar (si corresponde)
-            pagination: {
-                currentPage: page,
-                totalPages,
-                totalItems,
-            },
+            schedules,           // Pasamos todos los horarios
+            scheduleToEdit,      // Pasamos el horario a editar (si corresponde)
         });
     } catch (error) {
         console.error('Error al obtener los horarios:', error);

@@ -3,25 +3,26 @@ const db = require('../config/db'); // Conexión a la base de datos
 
 // Listar programas con filtro (si aplica)
 exports.listPrograms = async (req, res) => {
-    const { filter, page = 1, itemsPerPage = 1000 } = req.query; // Tomamos el filtro y el número de página
-    const offset = (page - 1) * itemsPerPage;
+    const { filter } = req.query; // Tomamos el filtro de la query
 
     try {
-        let query = `SELECT * FROM programa LIMIT ? OFFSET ?`;
-        let queryParams = [itemsPerPage, offset];
+        let query = `SELECT * FROM programa`; // Consulta base sin limitación ni paginación
+        let queryParams = [];
 
+        // Si existe un filtro, aplicamos el LIKE
         if (filter) {
-            query = `SELECT * FROM programa WHERE nombre_programa LIKE ? LIMIT ? OFFSET ?`;
-            queryParams = [`%${filter}%`, itemsPerPage, offset];
+            query = `SELECT * FROM programa WHERE nombre_programa LIKE ?`;
+            queryParams = [`%${filter}%`];
         }
 
-        // Obtener los programas
+        // Obtener los programas (sin límite ni offset)
         const [programs] = await db.query(query, queryParams);
+        
 
-        // Contar el total de registros para la paginación
-        const [totalResults] = await db.query('SELECT COUNT(*) AS count FROM programa');
-        const totalItems = totalResults[0].count;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        // Si es una solicitud AJAX (para filtrar), devolver solo los datos
+        if (req.xhr) {
+            return res.json(programs); // Retornar los programas filtrados
+        }
 
         // Obtener el programa a editar si es necesario
         const { editId } = req.query;
@@ -31,22 +32,12 @@ exports.listPrograms = async (req, res) => {
             programToEdit = rows.length > 0 ? rows[0] : null;
         }
 
-        // Si es una solicitud AJAX (para filtrar), devolver solo los datos
-        if (req.xhr) {
-            return res.json(programs);
-        }
-
         // Renderizamos la vista con los datos
         res.render('dashboard', {
             user: req.user,
             content: 'programs',
-            programs,
+            programs,  // Pasamos todos los programas
             programToEdit, // Pasamos el programa a editar
-            pagination: {
-                currentPage: parseInt(page),
-                totalPages,
-                totalItems,
-            },
         });
     } catch (error) {
         console.error('Error al listar programas:', error);
@@ -101,20 +92,20 @@ exports.deleteProgram = async (req, res) => {
     }
 };
 
-exports.filterPrograms = async (req, res) => {
-    const filter = req.query.query || ''; // Obtener el filtro de la query
+// exports.filterPrograms = async (req, res) => {
+//     const filter = req.query.query || ''; // Obtener el filtro de la query
 
-    try {
-        // Consultar los programas filtrados
-        const [programs] = await db.query('SELECT * FROM programa WHERE nombre_programa LIKE ?', [`%${filter}%`]);
+//     try {
+//         // Consultar los programas filtrados
+//         const [programs] = await db.query('SELECT * FROM programa WHERE nombre_programa LIKE ?', [`%${filter}%`]);
 
-        // Devuelve los programas como respuesta JSON
-        res.json(programs);
-    } catch (error) {
-        console.error('Error al filtrar los programas:', error);
-        res.status(500).send('Error al obtener los datos filtrados');
-    }
-};
+//         // Devuelve los programas como respuesta JSON
+//         res.json(programs);
+//     } catch (error) {
+//         console.error('Error al filtrar los programas:', error);
+//         res.status(500).send('Error al obtener los datos filtrados');
+//     }
+// };
 
 // const db = require('../config/db'); // Conexión a la base de datos
 

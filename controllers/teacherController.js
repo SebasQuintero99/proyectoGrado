@@ -1,19 +1,10 @@
 const db = require('../config/db'); // Conexión a la base de datos
 
-// Listar todos los docentes
+// Listar todos los docentes sin paginación, DataTables maneja la paginación
 exports.listTeachers = async (req, res) => {
-    const itemsPerPage = 1000; // Número de registros por página
-    const page = parseInt(req.query.page) || 1; // Página actual
-    const offset = (page - 1) * itemsPerPage;
-
     try {
-        // Contar el total de registros en la tabla docente
-        const [totalResults] = await db.query('SELECT COUNT(*) AS count FROM docente');
-        const totalItems = totalResults[0].count;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-        // Obtener los docentes para la página actual con paginación
-        const [teachers] = await db.query('SELECT * FROM docente LIMIT ? OFFSET ?', [itemsPerPage, offset]);
+        // Obtener todos los docentes sin aplicar la paginación
+        const [teachers] = await db.query('SELECT * FROM docente');
 
         const { editId } = req.query; // Capturamos el ID del docente a editar desde los parámetros de la URL
 
@@ -29,11 +20,6 @@ exports.listTeachers = async (req, res) => {
             content: 'teachers',
             teachers,
             teacherToEdit, // Pasamos el docente a editar (si corresponde)
-            pagination: {
-                currentPage: page,
-                totalPages,
-                totalItems,
-            },
         });
     } catch (error) {
         console.error('Error al obtener los docentes:', error);

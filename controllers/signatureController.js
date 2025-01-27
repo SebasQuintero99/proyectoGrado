@@ -1,27 +1,19 @@
 const db = require('../config/db'); // Conexión a la base de datos
 
 exports.listSignatures = async (req, res) => {
-    const itemsPerPage = 1000; // Número de registros por página
-    const page = parseInt(req.query.page) || 1; // Página actual
-    const offset = (page - 1) * itemsPerPage;
-
     try {
-        // Contar el total de registros en la tabla asignatura
-        const [totalResults] = await db.query('SELECT COUNT(*) AS count FROM asignatura');
-        const totalItems = totalResults[0].count;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-        // Obtener las asignaturas para la página actual con paginación
+        // Obtener todas las asignaturas, docentes y programas sin paginación
         const [signatures] = await db.query(`
             SELECT asignatura.*, docente.nombre AS docente_nombre, programa.nombre_programa
             FROM asignatura
             LEFT JOIN docente ON asignatura.id_docente = docente.id_docente
             LEFT JOIN programa ON asignatura.id_programa = programa.id_programa
-            LIMIT ? OFFSET ?
-        `, [itemsPerPage, offset]);
+        `);
 
-        const [teachers] = await db.query('SELECT id_docente, nombre FROM docente'); // Lista de docentes
-        const [programs] = await db.query('SELECT id_programa, nombre_programa FROM programa'); // Lista de programas
+        // Obtener la lista de docentes
+        const [teachers] = await db.query('SELECT id_docente, nombre FROM docente');
+        // Obtener la lista de programas
+        const [programs] = await db.query('SELECT id_programa, nombre_programa FROM programa');
 
         const { editId } = req.query; // ID de la asignatura a editar (si corresponde)
         const { error } = req.query; // Mensaje de error (si corresponde)
@@ -40,11 +32,6 @@ exports.listSignatures = async (req, res) => {
             signatureToEdit,
             teachers,
             programs,
-            pagination: {
-                currentPage: page,
-                totalPages,
-                totalItems,
-            },
             error
         });
     } catch (error) {

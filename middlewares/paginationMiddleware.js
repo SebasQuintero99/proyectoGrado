@@ -1,4 +1,4 @@
-const paginationMiddleware = (query, tableName, itemsPerPage = 10) => {
+const paginationMiddleware = (query, tableName, itemsPerPage = 10000) => {
     return async (req, res, next) => {
         const page = parseInt(req.query.page) || 1; // Página actual
         const offset = (page - 1) * itemsPerPage;

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db'); // Ruta hacia tu configuración de la base de datos
-const paginationMiddleware = require('../middlewares/paginationMiddleware');
+// const paginationMiddleware = require('../middlewares/paginationMiddleware');
 const loginController = require('../controllers/loginController');
 const registerController = require('../controllers/registerController');
 const logoutController = require('../controllers/logoutController');
@@ -11,49 +11,6 @@ const programController = require('../controllers/programController');
 const laboratoriesController = require('../controllers/laboratoriesController');
 const teacherController = require('../controllers/teacherController');
 const signatureController = require('../controllers/signatureController');
-
-
-
-
-// Ruta para la paginación de vistas
-router.get('/programs/filter', programController.filterPrograms);
-
-router.get(
-    '/programs',
-    verifyToken, // Primero verifica el token
-    paginationMiddleware(db.query.bind(db), 'programa', 10), // Luego aplica la paginación
-    programController.listPrograms // Finalmente maneja la lógica del controlador
-);
-
-// Ruta para la paginación de laboratorios
-router.get(
-    '/laboratories',
-    verifyToken, // Primero verifica el token
-    paginationMiddleware(db.query.bind(db), 'laboratorio', 10), // Luego aplica la paginación
-    laboratoriesController.listLaboratories // Finalmente maneja la lógica del controlador
-    
-);
-
-router.get(
-    '/schedules',
-    verifyToken, // Middleware para verificar el token
-    paginationMiddleware(db.query.bind(db), 'horario', 10), // Middleware de paginación
-    schedulesController.listSchedules // Método del controlador
-);
-
-router.get(
-    '/teachers',
-    verifyToken, // Middleware para verificar el token
-    paginationMiddleware(db.query.bind(db), 'docente', 10), // Middleware de paginación
-    teacherController.listTeachers // Método del controlador
-);
-
-router.get(
-    '/signatures',
-    verifyToken, // Middleware para verificar el token
-    paginationMiddleware(db.query.bind(db), 'asignatura', 10), // Middleware de paginación
-    signatureController.listSignatures // Método del controlador
-);
 
 
 // Ruta para listar programas (y cargar el formulario de edición si corresponde)
@@ -158,6 +115,18 @@ router.get('/home', verifyToken, (req, res) => {
     res.render('dashboard', { 
         user: req.user, 
         content: 'home' // Solo pasa el nombre de la vista
+
+        
+        
+    });
+    //  console.log('Usuario autenticado:', req.user);
+});
+
+// Ruta protegida para Home
+router.get('/rooms', verifyToken, (req, res) => {
+    res.render('dashboard', { 
+        user: req.user, 
+        content: 'rooms' // Solo pasa el nombre de la vista
 
         
         

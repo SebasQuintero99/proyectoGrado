@@ -46,7 +46,7 @@
     </form>
 
     <!-- Tabla de Laboratorios -->
-    <table id="example" class="table table-striped" style="width:100%">
+    <table id="laboratories" class="table table-striped" style="width:100%">
         <thead>
             <tr>
                 <th>#</th>
@@ -58,7 +58,7 @@
                 <th>Acciones</th>
             </tr>
         </thead>
-        <tbody id="programs-table-body">
+        <tbody id="laboratories-table-body">
             <% laboratories.forEach((laboratory, index) => { %>
             <tr>
                 <td><%= index + 1 %></td>
@@ -88,7 +88,7 @@
 
 <script>
 
-    new DataTable('#example', {
+    new DataTable('#laboratories', {
 
         layout: {
    

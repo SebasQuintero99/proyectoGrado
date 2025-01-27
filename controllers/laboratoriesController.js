@@ -2,25 +2,14 @@ const db = require('../config/db'); // Conexión a la base de datos
 
 
 exports.listLaboratories = async (req, res) => {
-    const itemsPerPage = 100; // Número de registros por página
-    const page = parseInt(req.query.page) || 1; // Página actual
-    const offset = (page - 1) * itemsPerPage;
-
     try {
-        // Contar el total de registros en la tabla laboratorio
-        const [totalResults] = await db.query('SELECT COUNT(*) AS count FROM laboratorio');
-        const totalItems = totalResults[0].count;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-        // Obtener los laboratorios para la página actual con paginación
+        // Obtener todos los laboratorios sin paginación
         const [laboratories] = await db.query(`
             SELECT laboratorio.id_laboratorio, laboratorio.nombre, laboratorio.capacidad, 
                    docente.nombre AS docente_nombre, docente.email AS docente_email, docente.telefono AS docente_telefono
             FROM laboratorio
             LEFT JOIN docente ON laboratorio.id_docente = docente.id_docente
-            LIMIT ? OFFSET ?`, 
-            [itemsPerPage, offset]
-        );
+        `);
 
         const { editId } = req.query; // Capturamos el ID del laboratorio a editar desde los parámetros de la URL
 
@@ -37,14 +26,9 @@ exports.listLaboratories = async (req, res) => {
         res.render('dashboard', {
             user: req.user,
             content: 'laboratories', // Esta es la vista de laboratorios
-            laboratories,
+            laboratories,  // Pasamos todos los laboratorios
             laboratoryToEdit, // Pasamos el laboratorio a editar (si corresponde)
             teachers, // Pasamos la lista de docentes para el selector
-            pagination: {
-                currentPage: page,
-                totalPages,
-                totalItems,
-            },
         });
     } catch (error) {
         console.error('Error al obtener los laboratorios:', error);
