@@ -31,7 +31,7 @@ exports.handleLogin = async (req, res) => {
         const token = jwt.sign(
             { id_usuario: user.id_usuario, email: user.email, id_rol: user.id_rol, nombre: user.nombre },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '5h' }
         );
 
         // Guardar el token en una cookie o usarlo en el frontend

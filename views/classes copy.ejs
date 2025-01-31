@@ -1,0 +1,150 @@
+<h1>Gestión de Clases</h1>
+
+<!-- Mensaje de error (opcional) -->
+<% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger" role="alert">
+        <%= error %>
+    </div>
+<% } %>
+
+<!-- Formulario de Agregar/Editar Clase -->
+<form action="<%= classToEdit ? '/classes/update' : '/classes/add' %>" method="POST" class="mb-4">
+    <% if (classToEdit) { %>
+        <input type="hidden" name="id_clase" value="<%= classToEdit.id_clase %>">
+    <% } %>
+
+    <!-- Selector de laboratorio -->
+    <div class="mb-3">
+        <label for="id_laboratorio" class="form-label">Laboratorio</label>
+        <select name="id_laboratorio" id="id_laboratorio" class="form-select w-50" required>
+            <option value="">Seleccione un laboratorio</option>
+            <% laboratories.forEach(lab => { %>
+                <option value="<%= lab.id_laboratorio %>" <%= classToEdit && classToEdit.id_laboratorio === lab.id_laboratorio ? 'selected' : '' %>>
+                    <%= lab.nombre %>
+                </option>
+            <% }) %>
+        </select>
+    </div>
+
+    <!-- Resto de los campos en dos columnas -->
+    <div class="row">
+        <!-- Primera columna -->
+        <div class="col-md-6 mb-3">
+            <label for="id_asignatura" class="form-label">Asignatura</label>
+            <select name="id_asignatura" id="id_asignatura" class="form-select" required>
+                <option value="">Seleccione una asignatura</option>
+                <% subjects.forEach(subject => { %>
+                    <option value="<%= subject.id_asignatura %>" 
+                        <%= classToEdit && classToEdit.id_asignatura === subject.id_asignatura ? 'selected' : '' %>>
+                        <%= subject.nombre %> - <%= subject.docente_nombre || 'Sin profesor' %> - <%= subject.numero_curso %>
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label for="dia_semana" class="form-label">Día de la Semana</label>
+            <select name="dia_semana" id="dia_semana" class="form-select" required>
+                <option value="">Seleccione un día</option>
+                <option value="Lunes" <%= classToEdit && classToEdit.dia_semana === 'Lunes' ? 'selected' : '' %>>Lunes</option>
+                <option value="Martes" <%= classToEdit && classToEdit.dia_semana === 'Martes' ? 'selected' : '' %>>Martes</option>
+                <option value="Miércoles" <%= classToEdit && classToEdit.dia_semana === 'Miércoles' ? 'selected' : '' %>>Miércoles</option>
+                <option value="Jueves" <%= classToEdit && classToEdit.dia_semana === 'Jueves' ? 'selected' : '' %>>Jueves</option>
+                <option value="Viernes" <%= classToEdit && classToEdit.dia_semana === 'Viernes' ? 'selected' : '' %>>Viernes</option>
+                <option value="Sábado" <%= classToEdit && classToEdit.dia_semana === 'Sábado' ? 'selected' : '' %>>Sábado</option>
+            </select>
+        </div>
+
+        <!-- Segunda columna -->
+        <div class="col-md-6 mb-3">
+            <label for="hora_inicio" class="form-label">Hora de Inicio</label>
+            <input 
+                type="time" 
+                name="hora_inicio" 
+                id="hora_inicio" 
+                class="form-control" 
+                value="<%= classToEdit ? classToEdit.hora_inicio : '' %>" 
+                required>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label for="hora_fin" class="form-label">Hora de Fin</label>
+            <input 
+                type="time" 
+                name="hora_fin" 
+                id="hora_fin" 
+                class="form-control" 
+                value="<%= classToEdit ? classToEdit.hora_fin : '' %>" 
+                required>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <button type="submit" class="btn <%= classToEdit ? 'btn-warning' : 'btn-success' %>">
+        <%= classToEdit ? 'Actualizar' : 'Agregar' %>
+    </button>
+    <% if (classToEdit) { %>
+        <a href="/classes" class="btn btn-secondary mt-2">Cancelar</a>
+    <% } %>
+</form>
+
+<!-- Tabla de Clases -->
+<table class="table table-bordered text-center">
+    <thead>
+        <tr>
+            <th>Horas</th>
+            <th>Lunes</th>
+            <th>Martes</th>
+            <th>Miércoles</th>
+            <th>Jueves</th>
+            <th>Viernes</th>
+            <th>Sábado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% 
+            // Generar horarios de menor a mayor
+            const horarios = [...new Set(classes.map(classItem => classItem.hora_inicio))].sort();
+
+            horarios.forEach(hora => { 
+        %>
+            <tr>
+            
+                <td><%= hora %></td>
+
+                <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'].forEach(dia => { 
+                    const clases = classes.filter(classItem => 
+                        classItem.hora_inicio <= hora && classItem.hora_fin > hora && classItem.dia_semana === dia
+                    );
+
+                    if (clases.length > 0) {
+                        const clase = clases[0]; // Mostrar la clase correspondiente
+                %>
+                        <td style="background-color: <%= clase.asignatura_color %>; color: black;">
+                            <div class="d-flex justify-content-end">
+                                <a href="/classes?editId=<%= clase.id_clase %>" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-pen-to-square"></i></a>
+                                <!-- Botón de eliminar -->
+                                <button 
+                                    class="btn btn-danger btn-sm delete-btn ms-1" 
+                                    data-id="<%= clase.id_clase %>" 
+                                    data-entity="classes">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <strong><%= clase.asignatura_nombre %></strong><br>
+                                <small><strong>N° curso:</strong> <%= clase.numero_curso %></small><br>
+                                <small><strong>Docente: </strong><%= clase.docente_nombre || 'Sin profesor' %></small><br>
+                                <small><strong>Horario: </strong><%= clase.hora_inicio %> - <%= clase.hora_fin %></small>
+                            </div>
+
+                        </td>
+                <% } else { %>
+                        <td>No hay clase</td>
+                <% } }); %>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>
+

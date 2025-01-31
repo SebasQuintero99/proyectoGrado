@@ -9,6 +9,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"><!-- Font Awesome -->
 
+    <!-- full calendar -->
+
+    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core/main.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid/main.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction/main.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction/main.js"></script>
+
+
 
     <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -35,6 +46,7 @@
 
 </head>
 <body>
+
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid">
             <!-- Imagen de la universidad -->
@@ -66,10 +78,10 @@
         </div>
         <a href="/signatures">Asignaturas</a>
         <a href="/teachers">Docentes</a>
-        <a href="/schedules">Horarios</a>
+        <!-- <a href="/schedules">Horarios</a> -->
         <a href="/laboratories">Laboratorios</a>
         <a href="/programs">Programas</a>
-        <a href="/rooms">Gestión de Salones</a>
+        <a href="/classes">Gestión de Salones</a>
             <!-- Ícono de cierre de sesión -->
             <div class="mt-auto text-center">
                 <button id="logout-button" class="btn btn-danger w-75 mb-3">

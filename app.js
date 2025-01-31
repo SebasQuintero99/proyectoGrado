@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const dotenv = require('dotenv');
 const db = require('./config/db'); // Ruta al archivo de conexión de la base de datos
 const cookieParser = require('cookie-parser'); // Middleware para manejar cookies
@@ -17,6 +18,12 @@ app.use(express.json());
 app.use(cookieParser()); // Middleware para manejar cookies
 app.use(express.urlencoded({ extended: true })); // Para manejar formularios
 app.use(verifyToken);
+
+app.use(session({
+    secret: process.env.SESSION_SECRET, // Usar la variable de entorno
+    resave: process.env.SESSION_RESAVE === 'true', // Convertir a booleano
+    saveUninitialized: process.env.SESSION_SAVE_UNINITIALIZED === 'true' // Convertir a booleano
+}));
 
 // Middleware de autenticación
 // Esto debe aplicarse solo a rutas protegidas, no de manera global

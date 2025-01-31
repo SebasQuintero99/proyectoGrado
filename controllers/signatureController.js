@@ -41,49 +41,153 @@ exports.listSignatures = async (req, res) => {
 };
 
 // Agregar una nueva asignatura
-exports.addSignature = async (req, res) => {
-    const { nombre, codigo_materia, semestre, id_docente, id_programa } = req.body;
+// exports.addSignature = async (req, res) => {
+//     const { nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos } = req.body;
 
-    if (!nombre || !codigo_materia || !semestre || !id_docente || !id_programa) {
-        return res.redirect('/signatures?error=Todos los campos son requeridos');
+//     if (!nombre || !codigo_materia || !semestre || !id_docente || !id_programa || !numero_curso || !numero_creditos) {
+//         return res.redirect('/signatures?error=Todos los campos son requeridos');
+//     }
+
+//     try {
+//         // Validar si ya existe un curso con el mismo numero_curso
+//         const [rows] = await db.query('SELECT * FROM asignatura WHERE numero_curso = ?', [numero_curso]);
+//         if (rows.length > 0) {
+//             return res.redirect('/signatures?error=Los cursos tienen un código único');
+//         }
+
+//         // Insertar el nuevo registro
+//         await db.query('INSERT INTO asignatura (nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+//             [nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos]);
+//         res.redirect('/signatures');
+//     } catch (error) {
+//         console.error('Error al agregar la asignatura:', error);
+//         res.status(500).send('Hubo un error al agregar la asignatura.');
+//     }
+// };
+
+exports.addSignature = async (req, res) => {
+    const { nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa } = req.body;
+
+    // Verificar que todos los campos obligatorios estén presentes
+    if (!nombre || !codigo_materia || !semestre || !numero_curso || !numero_creditos || !id_docente || !id_programa) {
+        return res.render('dashboard', {
+            content: 'signatures',
+            error: 'Todos los campos son obligatorios.',
+            signatureToEdit: null,
+            teachers: [],
+            programs: [],
+            signatures: [],
+        });
     }
 
-    try {
-        const [rows] = await db.query('SELECT * FROM asignatura WHERE codigo_materia = ?', [codigo_materia]);
-        if (rows.length > 0) {
-            return res.redirect('/signatures?error=Las asignaturas tienen un código único');
-        }
+    // Función para generar un color pastel
+    const getRandomPastelColor = () => {
+        const r = Math.floor((Math.random() * 127) + 127); // Rango entre 127 y 255
+        const g = Math.floor((Math.random() * 127) + 127); // Rango entre 127 y 255
+        const b = Math.floor((Math.random() * 127) + 127); // Rango entre 127 y 255
+        return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`; // Convertir a hexadecimal
+    };
 
-        await db.query('INSERT INTO asignatura (nombre, codigo_materia, semestre, id_docente, id_programa) VALUES (?, ?, ?, ?, ?)', 
-                       [nombre, codigo_materia, semestre, id_docente, id_programa]);
+    // Generar un color pastel
+    const color = getRandomPastelColor();
+
+    try {
+        // Insertar la nueva asignatura
+        await db.query(`
+            INSERT INTO asignatura (nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, color)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, color]
+        );
+
         res.redirect('/signatures');
     } catch (error) {
         console.error('Error al agregar la asignatura:', error);
-        res.status(500).send('Hubo un error al agregar la asignatura.');
+
+        res.render('dashboard', {
+            content: 'signatures',
+            error: 'Hubo un error al agregar la asignatura.',
+            signatureToEdit: null,
+            teachers: [],
+            programs: [],
+            signatures: [],
+        });
     }
 };
 
-// Actualizar una asignatura
-exports.updateSignature = async (req, res) => {
-    const { id_asignatura, nombre, codigo_materia, semestre, id_docente, id_programa } = req.body;
 
-    if (!id_asignatura || !nombre || !codigo_materia || !semestre || !id_docente || !id_programa) {
-        return res.redirect('/signatures?error=Todos los campos son requeridos');
+// Actualizar una asignatura
+// exports.updateSignature = async (req, res) => {
+//     const { id_asignatura, nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos } = req.body;
+
+//     if (!id_asignatura || !nombre || !codigo_materia || !semestre || !id_docente || !id_programa || !numero_curso || !numero_creditos) {
+//         return res.redirect('/signatures?error=Todos los campos son requeridos');
+//     }
+
+//     try {
+//         // Validar si ya existe un curso con el mismo numero_curso, excluyendo el registro que estamos actualizando
+//         const [rows] = await db.query('SELECT * FROM asignatura WHERE numero_curso = ? AND id_asignatura != ?', [numero_curso, id_asignatura]);
+//         if (rows.length > 0) {
+//             return res.redirect('/signatures?error=Los cursos tienen un código único');
+//         }
+
+//         // Actualizar el registro
+//         await db.query('UPDATE asignatura SET nombre = ?, codigo_materia = ?, semestre = ?, id_docente = ?, id_programa = ?, numero_curso = ?, numero_creditos = ? WHERE id_asignatura = ?', 
+//             [nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos, id_asignatura]);
+//         res.redirect('/signatures');
+//     } catch (error) {
+//         console.error('Error al actualizar la asignatura:', error);
+//         res.status(500).send('Hubo un error al actualizar la asignatura.');
+//     }
+// };
+
+exports.updateSignature = async (req, res) => {
+    const { id_asignatura, nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa } = req.body;
+
+    if (!id_asignatura || !nombre || !codigo_materia || !semestre || !numero_curso || !numero_creditos || !id_docente || !id_programa) {
+        return res.render('dashboard', {
+            content: 'signatures',
+            error: 'Todos los campos son obligatorios.',
+            signatureToEdit: null,
+            teachers: [],
+            programs: [],
+            signatures: [],
+        });
+    }
+
+    // Generar un color pastel si no existe en la asignatura actual
+    const [currentSignature] = await db.query('SELECT color FROM asignatura WHERE id_asignatura = ?', [id_asignatura]);
+    let color = currentSignature[0]?.color;
+    if (!color) {
+        const getRandomPastelColor = () => {
+            const r = Math.floor((Math.random() * 127) + 127);
+            const g = Math.floor((Math.random() * 127) + 127);
+            const b = Math.floor((Math.random() * 127) + 127);
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+        };
+        color = getRandomPastelColor();
     }
 
     try {
-        const [rows] = await db.query('SELECT * FROM asignatura WHERE codigo_materia = ? AND id_asignatura != ?', 
-                                      [codigo_materia, id_asignatura]);
-        if (rows.length > 0) {
-            return res.redirect('/signatures?error=Las asignaturas tienen un código único');
-        }
+        // Actualizar los datos de la asignatura
+        await db.query(`
+            UPDATE asignatura 
+            SET nombre = ?, codigo_materia = ?, semestre = ?, numero_curso = ?, numero_creditos = ?, id_docente = ?, id_programa = ?, color = ?
+            WHERE id_asignatura = ?`,
+            [nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, color, id_asignatura]
+        );
 
-        await db.query('UPDATE asignatura SET nombre = ?, codigo_materia = ?, semestre = ?, id_docente = ?, id_programa = ? WHERE id_asignatura = ?', 
-                       [nombre, codigo_materia, semestre, id_docente, id_programa, id_asignatura]);
         res.redirect('/signatures');
     } catch (error) {
         console.error('Error al actualizar la asignatura:', error);
-        res.status(500).send('Hubo un error al actualizar la asignatura.');
+
+        res.render('dashboard', {
+            content: 'signatures',
+            error: 'Hubo un error al actualizar la asignatura.',
+            signatureToEdit: null,
+            teachers: [],
+            programs: [],
+            signatures: [],
+        });
     }
 };
 

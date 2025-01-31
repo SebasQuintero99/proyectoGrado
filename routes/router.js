@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/db'); // Ruta hacia tu configuración de la base de datos
+// const db = require('../config/db'); // Ruta hacia tu configuración de la base de datos
 // const paginationMiddleware = require('../middlewares/paginationMiddleware');
 const loginController = require('../controllers/loginController');
 const registerController = require('../controllers/registerController');
 const logoutController = require('../controllers/logoutController');
+const classController = require('../controllers/classController');
 const verifyToken = require('../middlewares/authMiddleware'); // Importar el middleware de autenticación
 const schedulesController = require('../controllers/schedulesController');
 const programController = require('../controllers/programController');
@@ -12,6 +13,15 @@ const laboratoriesController = require('../controllers/laboratoriesController');
 const teacherController = require('../controllers/teacherController');
 const signatureController = require('../controllers/signatureController');
 
+
+// // Listar clases
+ // router.get('/classes',verifyToken, classController.getLaboratories);
+
+// Rutas de Clases
+router.get('/classes', verifyToken, classController.listClasses);
+router.post('/classes/add', verifyToken, classController.addClass);
+router.post('/classes/update', verifyToken, classController.updateClass);
+router.get('/classes/delete/:id', verifyToken, classController.deleteClass);
 
 // Ruta para listar programas (y cargar el formulario de edición si corresponde)
 router.get('/programs', verifyToken, programController.listPrograms);
@@ -123,16 +133,18 @@ router.get('/home', verifyToken, (req, res) => {
 });
 
 // Ruta protegida para Home
-router.get('/rooms', verifyToken, (req, res) => {
+router.get('/classes', verifyToken, (req, res) => {
     res.render('dashboard', { 
         user: req.user, 
-        content: 'rooms' // Solo pasa el nombre de la vista
+        content: 'classes' // Solo pasa el nombre de la vista
 
         
         
     });
     //  console.log('Usuario autenticado:', req.user);
 });
+
+
 
 
 
