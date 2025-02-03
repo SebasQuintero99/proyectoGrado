@@ -24,7 +24,7 @@ exports.getLaboratories = async (req, res) => {
 
 exports.listClasses = async (req, res) => {
     try {
-        const error = req.session.error; // Obtener mensaje de error desde la sesión
+        const error = req.session.error; // Obtener el mensaje de error desde la sesión
         delete req.session.error; // Limpiar el mensaje después de usarlo
 
         const { selectedLaboratory } = req.query; // Obtener el ID del laboratorio seleccionado
@@ -32,9 +32,9 @@ exports.listClasses = async (req, res) => {
         // Consultar laboratorios
         const [laboratories] = await db.query('SELECT id_laboratorio, nombre FROM laboratorio');
 
+        // Consultar clases filtradas por laboratorio
         let classes = [];
         if (selectedLaboratory) {
-            // Consultar clases filtradas por el laboratorio seleccionado
             [classes] = await db.query(`
                 SELECT clase.id_clase, clase.dia_semana, clase.hora_inicio, clase.hora_fin,
                        asignatura.nombre AS asignatura_nombre, asignatura.numero_curso, 
@@ -83,10 +83,10 @@ exports.listClasses = async (req, res) => {
 
         res.render('dashboard', {
             content: 'classes',
-            classes: classes || [],
-            subjects,
+            classes,
             laboratories,
-            selectedLaboratory, // Pasar el laboratorio seleccionado
+            selectedLaboratory: selectedLaboratory || '', // Laboratorio seleccionado
+            subjects,
             classToEdit,
             error,
             user: req.user || { email: 'Invitado' },
@@ -97,15 +97,16 @@ exports.listClasses = async (req, res) => {
         res.render('dashboard', {
             content: 'classes',
             classes: [],
-            subjects: [],
             laboratories: [],
             selectedLaboratory: null,
+            subjects: [],
             classToEdit: null,
             error: 'No se pudieron cargar las clases.',
             user: req.user || { email: 'Invitado' },
         });
     }
 };
+
 
 exports.addClass = async (req, res) => {
     const { id_asignatura, id_laboratorio, dia_semana, hora_inicio, hora_fin } = req.body;
@@ -140,16 +141,13 @@ exports.addClass = async (req, res) => {
             JOIN laboratorio ON clase.id_laboratorio = laboratorio.id_laboratorio
             WHERE clase.dia_semana = ?
               AND (
-                  -- Caso 1: Mismo semestre, diferente laboratorio, mismo nombre base
-                  (asignatura.semestre = ? AND asignatura.nombre LIKE ? AND clase.id_laboratorio = ? AND ((clase.hora_inicio < ? AND clase.hora_fin > ?) OR (clase.hora_inicio < ? AND clase.hora_fin > ?)))
-                  OR
-                  -- Caso 2: Diferente nombre base, mismo semestre
-                  (asignatura.semestre = ? AND asignatura.nombre NOT LIKE ? AND ((clase.hora_inicio < ? AND clase.hora_fin > ?) OR (clase.hora_inicio < ? AND clase.hora_fin > ?)))
+                  -- Caso 1: Diferente laboratorio, mismo horario, mismo semestre, diferente grupo
+                  (asignatura.semestre = ? AND asignatura.nombre LIKE ? AND ((clase.hora_inicio < ? AND clase.hora_fin > ?) OR (clase.hora_inicio < ? AND clase.hora_fin > ?)))
+                  AND asignatura.nombre != ?
               )
         `, [
             dia_semana,
-            semestre, `${materia_base}%`, id_laboratorio, hora_fin, hora_inicio, hora_inicio, hora_fin, // Caso 1
-            semestre, `${materia_base}%`, hora_fin, hora_inicio, hora_inicio, hora_fin // Caso 2
+            semestre, `${materia_base}%`, hora_fin, hora_inicio, hora_inicio, hora_fin, grupo_actual
         ]);
 
         if (conflicts.length > 0) {
@@ -208,17 +206,14 @@ exports.updateClass = async (req, res) => {
             WHERE clase.dia_semana = ?
               AND clase.id_clase != ?
               AND (
-                  -- Caso 1: Mismo semestre, diferente laboratorio, mismo nombre base
-                  (asignatura.semestre = ? AND asignatura.nombre LIKE ? AND clase.id_laboratorio = ? AND ((clase.hora_inicio < ? AND clase.hora_fin > ?) OR (clase.hora_inicio < ? AND clase.hora_fin > ?)))
-                  OR
-                  -- Caso 2: Diferente nombre base, mismo semestre
-                  (asignatura.semestre = ? AND asignatura.nombre NOT LIKE ? AND ((clase.hora_inicio < ? AND clase.hora_fin > ?) OR (clase.hora_inicio < ? AND clase.hora_fin > ?)))
+                  -- Caso 1: Diferente laboratorio, mismo horario, mismo semestre, diferente grupo
+                  (asignatura.semestre = ? AND asignatura.nombre LIKE ? AND ((clase.hora_inicio < ? AND clase.hora_fin > ?) OR (clase.hora_inicio < ? AND clase.hora_fin > ?)))
+                  AND asignatura.nombre != ?
               )
         `, [
             dia_semana,
             id_clase,
-            semestre, `${materia_base}%`, id_laboratorio, hora_fin, hora_inicio, hora_inicio, hora_fin, // Caso 1
-            semestre, `${materia_base}%`, hora_fin, hora_inicio, hora_inicio, hora_fin // Caso 2
+            semestre, `${materia_base}%`, hora_fin, hora_inicio, hora_inicio, hora_fin, grupo_actual
         ]);
 
         if (conflicts.length > 0) {

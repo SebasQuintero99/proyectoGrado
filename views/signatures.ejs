@@ -9,95 +9,95 @@
     <% } %>
 
     <!-- Formulario de Agregar/Editar Asignatura -->
-    <form action="<%= signatureToEdit ? '/signatures/update' : '/signatures/add' %>" method="POST" class="mb-4">
-        <% if (signatureToEdit) { %>
-            <input type="hidden" name="id_asignatura" value="<%= signatureToEdit.id_asignatura %>">
-        <% } %>
-        <div class="row">
-            <!-- Columna izquierda -->
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input 
-                        type="text" 
-                        name="nombre" 
-                        class="form-control" 
-                        placeholder="Nombre de la asignatura" 
-                        value="<%= signatureToEdit ? signatureToEdit.nombre : '' %>" 
-                        required>
+    <% if (permittedRoutes.includes('/signatures/add')) { %>
+        <form action="<%= signatureToEdit ? '/signatures/update' : '/signatures/add' %>" method="POST" class="mb-4">
+            <% if (signatureToEdit) { %>
+                <input type="hidden" name="id_asignatura" value="<%= signatureToEdit.id_asignatura %>">
+            <% } %>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input 
+                            type="text" 
+                            name="nombre" 
+                            class="form-control" 
+                            placeholder="Nombre de la asignatura" 
+                            value="<%= signatureToEdit ? signatureToEdit.nombre : '' %>" 
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="codigo_materia" class="form-label">Código Materia</label>
+                        <input 
+                            type="text" 
+                            name="codigo_materia" 
+                            class="form-control" 
+                            placeholder="Código de la materia" 
+                            value="<%= signatureToEdit ? signatureToEdit.codigo_materia : '' %>" 
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="numero_curso" class="form-label">Número de Curso</label>
+                        <input 
+                            type="number" 
+                            name="numero_curso" 
+                            class="form-control" 
+                            placeholder="Número de curso" 
+                            value="<%= signatureToEdit ? signatureToEdit.numero_curso : '' %>" 
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="semestre" class="form-label">Semestre</label>
+                        <select name="semestre" class="form-select" required>
+                            <% for (let i = 1; i <= 10; i++) { %>
+                                <option value="<%= i %>" <%= signatureToEdit && signatureToEdit.semestre == i ? 'selected' : '' %>><%= i %></option>
+                            <% } %>
+                        </select>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="codigo_materia" class="form-label">Código Materia</label>
-                    <input 
-                        type="text" 
-                        name="codigo_materia" 
-                        class="form-control" 
-                        placeholder="Código de la materia" 
-                        value="<%= signatureToEdit ? signatureToEdit.codigo_materia : '' %>" 
-                        required>
-                </div>
-                <div class="mb-3">
-                    <label for="numero_curso" class="form-label">Número de Curso</label>
-                    <input 
-                        type="number" 
-                        name="numero_curso" 
-                        class="form-control" 
-                        placeholder="Número de curso" 
-                        value="<%= signatureToEdit ? signatureToEdit.numero_curso : '' %>" 
-                        required>
-                </div>
-                <div class="mb-3">
-                    <label for="semestre" class="form-label">Semestre</label>
-                    <select name="semestre" class="form-select" required>
-                        <% for (let i = 1; i <= 10; i++) { %>
-                            <option value="<%= i %>" <%= signatureToEdit && signatureToEdit.semestre == i ? 'selected' : '' %>><%= i %></option>
-                        <% } %>
-                    </select>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="numero_creditos" class="form-label">Número de Créditos</label>
+                        <select name="numero_creditos" class="form-select" required>
+                            <% for (let i = 1; i <= 4; i++) { %>
+                                <option value="<%= i %>" <%= signatureToEdit && signatureToEdit.numero_creditos == i ? 'selected' : '' %>><%= i %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_programa" class="form-label">Programa</label>
+                        <select name="id_programa" class="form-select" required>
+                            <option value="">Seleccione un programa</option>
+                            <% programs.forEach(program => { %>
+                                <option value="<%= program.id_programa %>" <%= signatureToEdit && signatureToEdit.id_programa == program.id_programa ? 'selected' : '' %>>
+                                    <%= program.nombre_programa %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_docente" class="form-label">Docente</label>
+                        <select name="id_docente" class="form-select" required>
+                            <option value="">Seleccione un docente</option>
+                            <% teachers.forEach(teacher => { %>
+                                <option value="<%= teacher.id_docente %>" <%= signatureToEdit && signatureToEdit.id_docente == teacher.id_docente ? 'selected' : '' %>>
+                                    <%= teacher.nombre %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <!-- Columna derecha -->
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="numero_creditos" class="form-label">Número de Créditos</label>
-                    <select name="numero_creditos" class="form-select" required>
-                        <% for (let i = 1; i <= 4; i++) { %>
-                            <option value="<%= i %>" <%= signatureToEdit && signatureToEdit.numero_creditos == i ? 'selected' : '' %>><%= i %></option>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="id_programa" class="form-label">Programa</label>
-                    <select name="id_programa" class="form-select" required>
-                        <option value="">Seleccione un programa</option>
-                        <% programs.forEach(program => { %>
-                            <option value="<%= program.id_programa %>" <%= signatureToEdit && signatureToEdit.id_programa == program.id_programa ? 'selected' : '' %>>
-                                <%= program.nombre_programa %>
-                            </option>
-                        <% }) %>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="id_docente" class="form-label">Docente</label>
-                    <select name="id_docente" class="form-select" required>
-                        <option value="">Seleccione un docente</option>
-                        <% teachers.forEach(teacher => { %>
-                            <option value="<%= teacher.id_docente %>" <%= signatureToEdit && signatureToEdit.id_docente == teacher.id_docente ? 'selected' : '' %>>
-                                <%= teacher.nombre %>
-                            </option>
-                        <% }) %>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <button type="submit" class="btn <%= signatureToEdit ? 'btn-warning' : 'btn-success' %>">
-            <%= signatureToEdit ? 'Actualizar' : 'Agregar' %>
-        </button>
-        <% if (signatureToEdit) { %>
-            <a href="/signatures" class="btn btn-secondary mt-2">Cancelar</a>
-        <% } %>
-    </form>
+            <button type="submit" class="btn <%= signatureToEdit ? 'btn-warning' : 'btn-success' %>">
+                <%= signatureToEdit ? 'Actualizar' : 'Agregar' %>
+            </button>
+            <% if (signatureToEdit) { %>
+                <a href="/signatures" class="btn btn-secondary mt-2">Cancelar</a>
+            <% } %>
+        </form>
+    <% } %>
 
     <!-- Tabla de Asignaturas -->
     <table id="signatures" class="table table-striped" style="width:100%">
@@ -111,7 +111,9 @@
                 <th>Docente</th>
                 <th>Programa</th>
                 <th>Número de Créditos</th>
-                <th>Acciones</th>
+                <% if (permittedRoutes.includes('/signatures/update') || permittedRoutes.includes('/signatures/delete')) { %>
+                    <th>Acciones</th>
+                <% } %>
             </tr>
         </thead>
         <tbody id="signatures-table-body">
@@ -125,17 +127,23 @@
                 <td><%= signature.docente_nombre || 'No asignado' %></td>
                 <td><%= signature.nombre_programa || 'No asignado' %></td>
                 <td><%= signature.numero_creditos %></td>
-                <td>
-                    <a href="/signatures?editId=<%= signature.id_asignatura %>" class="btn btn-primary btn-sm">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </a>
-                    <button 
-                        class="btn btn-danger btn-sm delete-btn" 
-                        data-id="<%= signature.id_asignatura %>" 
-                        data-entity="signatures">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </td>
+                <% if (permittedRoutes.includes('/signatures/update') || permittedRoutes.includes('/signatures/delete')) { %>
+                    <td>
+                        <% if (permittedRoutes.includes('/signatures/update')) { %>
+                            <a href="/signatures?editId=<%= signature.id_asignatura %>" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                        <% } %>
+                        <% if (permittedRoutes.includes('/signatures/delete')) { %>
+                            <button 
+                                class="btn btn-danger btn-sm delete-btn" 
+                                data-id="<%= signature.id_asignatura %>" 
+                                data-entity="signatures">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        <% } %>
+                    </td>
+                <% } %>
             </tr>
             <% }) %>
         </tbody>

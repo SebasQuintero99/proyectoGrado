@@ -1,47 +1,50 @@
 <div>
     <h1>Gestión de Docentes</h1>
+
     <!-- Formulario de Agregar/Editar Docente -->
-    <form action="<%= teacherToEdit ? '/teachers/update' : '/teachers/add' %>" method="POST" class="mb-4">
-        <% if (teacherToEdit) { %>
-            <input type="hidden" name="id_docente" value="<%= teacherToEdit.id_docente %>">
-        <% } %>
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input 
-                type="text" 
-                name="nombre" 
-                class="form-control w-50" 
-                placeholder="Nombre del docente" 
-                value="<%= teacherToEdit ? teacherToEdit.nombre : '' %>" 
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Correo Electrónico</label>
-            <input 
-                type="email" 
-                name="email" 
-                class="form-control w-50" 
-                placeholder="Correo del docente" 
-                value="<%= teacherToEdit ? teacherToEdit.email : '' %>" 
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="telefono" class="form-label">Teléfono</label>
-            <input 
-                type="text" 
-                name="telefono" 
-                class="form-control w-50" 
-                placeholder="Teléfono del docente" 
-                value="<%= teacherToEdit ? teacherToEdit.telefono : '' %>" 
-                required>
-        </div>
-        <button type="submit" class="btn <%= teacherToEdit ? 'btn-warning' : 'btn-success' %>">
-            <%= teacherToEdit ? 'Actualizar' : 'Agregar' %>
-        </button>
-        <% if (teacherToEdit) { %>
-            <a href="/teachers" class="btn btn-secondary mt-2">Cancelar</a>
-        <% } %>
-    </form>
+    <% if (permittedRoutes.includes('/teachers/add')) { %>
+        <form action="<%= teacherToEdit ? '/teachers/update' : '/teachers/add' %>" method="POST" class="mb-4">
+            <% if (teacherToEdit) { %>
+                <input type="hidden" name="id_docente" value="<%= teacherToEdit.id_docente %>">
+            <% } %>
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input 
+                    type="text" 
+                    name="nombre" 
+                    class="form-control w-50" 
+                    placeholder="Nombre del docente" 
+                    value="<%= teacherToEdit ? teacherToEdit.nombre : '' %>" 
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    class="form-control w-50" 
+                    placeholder="Correo del docente" 
+                    value="<%= teacherToEdit ? teacherToEdit.email : '' %>" 
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input 
+                    type="text" 
+                    name="telefono" 
+                    class="form-control w-50" 
+                    placeholder="Teléfono del docente" 
+                    value="<%= teacherToEdit ? teacherToEdit.telefono : '' %>" 
+                    required>
+            </div>
+            <button type="submit" class="btn <%= teacherToEdit ? 'btn-warning' : 'btn-success' %>">
+                <%= teacherToEdit ? 'Actualizar' : 'Agregar' %>
+            </button>
+            <% if (teacherToEdit) { %>
+                <a href="/teachers" class="btn btn-secondary mt-2">Cancelar</a>
+            <% } %>
+        </form>
+    <% } %>
 
     <!-- Tabla de Docentes -->
     <table id="teachers" class="table table-striped" style="width:100%">
@@ -51,7 +54,9 @@
                 <th>Nombre</th>
                 <th>Email</th>
                 <th>Teléfono</th>
-                <th>Acciones</th>
+                <% if (permittedRoutes.includes('/teachers/update') || permittedRoutes.includes('/teachers/delete')) { %>
+                    <th>Acciones</th>
+                <% } %>
             </tr>
         </thead>
         <tbody id="teachers-table-body">
@@ -61,42 +66,40 @@
                 <td><%= teacher.nombre %></td>
                 <td><%= teacher.email %></td>
                 <td><%= teacher.telefono %></td>
-                <td>
-                    <a href="/teachers?editId=<%= teacher.id_docente %>" class="btn btn-primary btn-sm">
-                        <i class="fa-solid fa-pen-to-square"></i>
-
-                    </a>
-                    <!-- Botón con evento SweetAlert2 -->
-                    <button 
-                    class="btn btn-danger btn-sm delete-btn" 
-                    data-id="<%= teacher.id_docente %>" 
-                    data-entity="teachers">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-                </td>
+                <% if (permittedRoutes.includes('/teachers/update') || permittedRoutes.includes('/teachers/delete')) { %>
+                    <td>
+                        <% if (permittedRoutes.includes('/teachers/update')) { %>
+                            <a href="/teachers?editId=<%= teacher.id_docente %>" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                        <% } %>
+                        <% if (permittedRoutes.includes('/teachers/delete')) { %>
+                            <button 
+                                class="btn btn-danger btn-sm delete-btn" 
+                                data-id="<%= teacher.id_docente %>" 
+                                data-entity="teachers">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        <% } %>
+                    </td>
+                <% } %>
             </tr>
             <% }) %>
         </tbody>
     </table>
 
 </div>
-</div>
 
 <script>
-
     new DataTable('#teachers', {
-
         layout: {
-   
             topStart: {
-                buttons:  [
-
+                buttons: [
                     {
                         extend: 'excelHtml5',
                         text: '<i class="fa fa-file-excel-o"></i> Excel',
                         titleAttr: 'Excel'
                     },
-
                     {
                         extend: 'pdfHtml5',
                         text: '<i class="fa fa-file-pdf-o"></i> PDF',
@@ -105,6 +108,5 @@
                 ]
             }
         }
-        
     });
-    </script>
+</script>

@@ -195,6 +195,8 @@ exports.updateSignature = async (req, res) => {
 // Eliminar una asignatura
 exports.deleteSignature = async (req, res) => {
     const { id } = req.params;
+    
+    
 
     try {
         await db.query('DELETE FROM asignatura WHERE id_asignatura = ?', [id]);

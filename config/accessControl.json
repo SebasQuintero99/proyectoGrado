@@ -1,0 +1,27 @@
+{
+  "roles": {
+    "1": {
+      "rutas": ["/home", "/classes", "/classes/add", "/classes/update", "/classes/delete",
+                "/teachers", "/teachers/add", "/teachers/update", "/teachers/delete",
+                "/programs", "/programs/add", "/programs/update", "/programs/delete",
+                "/signatures", "/signatures/add", "/signatures/update", "/signatures/delete",
+                "/laboratories", "/laboratories/add", "/laboratories/update", "/laboratories/delete"]
+    },
+    "2": {
+      "rutas": ["/home", "/classes", "/classes/add", "/classes/update", "/classes/delete"]
+    },
+    "3": {
+      "rutas": ["/home", "/classes", "/classes/add", "/classes/update", "/classes/delete",
+                "/teachers", "/teachers/add", "/teachers/update", "/teachers/delete",
+               "/programs"]
+    },
+    "4": {
+      "rutas": ["/home",
+                "/teachers",
+                "/programs",
+                "/signatures",
+                "/laboratories",
+                "/classes"]
+    }
+  }
+}

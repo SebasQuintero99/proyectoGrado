@@ -1,5 +1,39 @@
-        <!-- Contenido principal -->
-        <div class="content" id="content">
-            <h1>Bienvenido a Home</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, dolorum reprehenderit saepe ad, dolorem recusandae commodi aliquid laborum aut reiciendis ipsum nobis quae ut quibusdam iste dolores asperiores veniam omnis!</p>
+<h1>Dashboard</h1>
+
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Clases</h5><i class="fa-solid fa-chalkboard-user"></i>
+                    <p class="card-text" id="total-clases"><%= stats.totalClases %></p>
+                </div>
+            </div>
         </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">asignaturas</h5><i class="fa-solid fa-book"></i>
+                    <p class="card-text" id="total-asignaturas"><%= stats.totalAsignaturas %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">docentes</h5><i class="fa-solid fa-user"></i>
+                    <p class="card-text" id="total-docentes"><%= stats.totalDocentes %></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"> 
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Laboratorios</h5><i class="fa-solid fa-laptop"></i>
+                    <p class="card-text" id="total-laboratorios"><%= stats.totalLaboratorios %></p>
+                </div>
+            </div>
+        </div>
+    </div>
+

@@ -77,28 +77,20 @@
             <span class="menu-title">Menú</span>
             <button class="collapse-btn" id="collapse-btn">☰</button>
         </div>
-        <% if (permittedRoutes.includes('/signatures')) { %>
-            <a href="/signatures">Asignaturas</a>
-        <% } %>
-        <% if (permittedRoutes.includes('/teachers')) { %>
-            <a href="/teachers">Docentes</a>
-        <% } %>
-        <% if (permittedRoutes.includes('/laboratories')) { %>
-            <a href="/laboratories">Laboratorios</a>
-        <% } %>
-        <% if (permittedRoutes.includes('/programs')) { %>
-            <a href="/programs">Programas</a>
-        <% } %>
-        <% if (permittedRoutes.includes('/classes')) { %>
-            <a href="/classes">Gestión de Salones</a>
-        <% } %>
-        <div class="mt-auto text-center">
-            <button id="logout-button" class="btn btn-danger w-75 mb-3">
-                <i class="fas fa-sign-out-alt"></i> Salir
-            </button>
-        </div>
+        <a href="/signatures">Asignaturas</a>
+        <a href="/teachers">Docentes</a>
+        <a href="/laboratories">Laboratorios</a>
+        <a href="/programs">Programas</a>
+        <a href="/classes">Gestión de Salones</a>
+            <!-- Ícono de cierre de sesión -->
+            <div class="mt-auto text-center">
+                <button id="logout-button" class="btn btn-danger w-75 mb-3">
+                    <i class="fas fa-sign-out-alt"></i> Salir <!-- Ícono de cerrar sesión -->
+                </button>
+            </div>
+
+
     </div>
-    
 
         <!-- Contenido principal -->
         <div class="content" id="content">

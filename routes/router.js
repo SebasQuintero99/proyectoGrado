@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 // const db = require('../config/db'); // Ruta hacia tu configuración de la base de datos
 // const paginationMiddleware = require('../middlewares/paginationMiddleware');
+const forbiddenController = require('../controllers/forbiddenController');
 const loginController = require('../controllers/loginController');
 const registerController = require('../controllers/registerController');
 const logoutController = require('../controllers/logoutController');
@@ -12,6 +13,14 @@ const programController = require('../controllers/programController');
 const laboratoriesController = require('../controllers/laboratoriesController');
 const teacherController = require('../controllers/teacherController');
 const signatureController = require('../controllers/signatureController');
+const homeController = require('../controllers/homeController');
+
+
+
+
+
+router.get('/home', verifyToken, homeController.renderHome);
+
 
 
 // // Listar clases
@@ -141,7 +150,7 @@ router.get('/classes', verifyToken, (req, res) => {
         
         
     });
-    //  console.log('Usuario autenticado:', req.user);
+    ///  console.log('Usuario autenticado:', req.user);
 });
 
 
@@ -153,5 +162,7 @@ router.get('*', verifyToken, (req, res) => {
     res.redirect('/home'); // Redirige a la página de inicio (home)
 });
 
+// Ruta de acceso denegado
+router.get('/forbidden', verifyToken, forbiddenController.renderAccessForbidden);
 
 module.exports = router;

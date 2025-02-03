@@ -1,49 +1,51 @@
-<div>
+¿<div>
     <h1>Gestión de Laboratorios</h1>
 
     <!-- Formulario de Agregar/Editar Laboratorio -->
-    <form action="<%= laboratoryToEdit ? '/laboratories/update' : '/laboratories/add' %>" method="POST" class="mb-4">
-        <% if (laboratoryToEdit) { %>
-            <input type="hidden" name="id_laboratorio" value="<%= laboratoryToEdit.id_laboratorio %>">
-        <% } %>
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input 
-                type="text" 
-                name="nombre" 
-                class="form-control w-50" 
-                placeholder="Nombre del laboratorio" 
-                value="<%= laboratoryToEdit ? laboratoryToEdit.nombre : '' %>" 
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="capacidad" class="form-label">Capacidad</label>
-            <input 
-                type="number" 
-                name="capacidad" 
-                class="form-control w-25" 
-                placeholder="Capacidad" 
-                value="<%= laboratoryToEdit ? laboratoryToEdit.capacidad : '' %>" 
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="id_docente" class="form-label">Docente</label>
-            <select name="id_docente" id="id_docente" class="form-select w-50" required>
-                <option value="">Seleccione un docente</option>
-                <% teachers.forEach(teacher => { %>
-                    <option value="<%= teacher.id_docente %>" <%= laboratoryToEdit && laboratoryToEdit.id_docente === teacher.id_docente ? 'selected' : '' %>>
-                        <%= teacher.nombre %> (<%= teacher.email %>)
-                    </option>
-                <% }) %>
-            </select>
-        </div>
-        <button type="submit" class="btn <%= laboratoryToEdit ? 'btn-warning' : 'btn-success' %>">
-            <%= laboratoryToEdit ? 'Actualizar' : 'Agregar' %>
-        </button>
-        <% if (laboratoryToEdit) { %>
-            <a href="/laboratories" class="btn btn-secondary mt-2">Cancelar</a>
-        <% } %>
-    </form>
+    <% if (permittedRoutes.includes('/laboratories/add')) { %>
+        <form action="<%= laboratoryToEdit ? '/laboratories/update' : '/laboratories/add' %>" method="POST" class="mb-4">
+            <% if (laboratoryToEdit) { %>
+                <input type="hidden" name="id_laboratorio" value="<%= laboratoryToEdit.id_laboratorio %>">
+            <% } %>
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input 
+                    type="text" 
+                    name="nombre" 
+                    class="form-control w-50" 
+                    placeholder="Nombre del laboratorio" 
+                    value="<%= laboratoryToEdit ? laboratoryToEdit.nombre : '' %>" 
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="capacidad" class="form-label">Capacidad</label>
+                <input 
+                    type="number" 
+                    name="capacidad" 
+                    class="form-control w-25" 
+                    placeholder="Capacidad" 
+                    value="<%= laboratoryToEdit ? laboratoryToEdit.capacidad : '' %>" 
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="id_docente" class="form-label">Docente</label>
+                <select name="id_docente" id="id_docente" class="form-select w-50" required>
+                    <option value="">Seleccione un docente</option>
+                    <% teachers.forEach(teacher => { %>
+                        <option value="<%= teacher.id_docente %>" <%= laboratoryToEdit && laboratoryToEdit.id_docente === teacher.id_docente ? 'selected' : '' %>>
+                            <%= teacher.nombre %> (<%= teacher.email %>)
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+            <button type="submit" class="btn <%= laboratoryToEdit ? 'btn-warning' : 'btn-success' %>">
+                <%= laboratoryToEdit ? 'Actualizar' : 'Agregar' %>
+            </button>
+            <% if (laboratoryToEdit) { %>
+                <a href="/laboratories" class="btn btn-secondary mt-2">Cancelar</a>
+            <% } %>
+        </form>
+    <% } %>
 
     <!-- Tabla de Laboratorios -->
     <table id="laboratories" class="table table-striped" style="width:100%">
@@ -55,7 +57,9 @@
                 <th>Docente</th>
                 <th>Email</th>
                 <th>Teléfono</th>
-                <th>Acciones</th>
+                <% if (permittedRoutes.includes('/laboratories/update') || permittedRoutes.includes('/laboratories/delete')) { %>
+                    <th>Acciones</th>
+                <% } %>
             </tr>
         </thead>
         <tbody id="laboratories-table-body">
@@ -67,18 +71,24 @@
                 <td><%= laboratory.docente_nombre || 'No asignado' %></td>
                 <td><%= laboratory.docente_email || 'No disponible' %></td>
                 <td><%= laboratory.docente_telefono || 'No disponible' %></td>
-                <td>
-                    <a href="/laboratories?editId=<%= laboratory.id_laboratorio %>" class="btn btn-primary btn-sm">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </a>
-                    <!-- Botón con evento SweetAlert2 -->
-                    <button 
-                    class="btn btn-danger btn-sm delete-btn" 
-                    data-id="<%= laboratory.id_laboratorio %>" 
-                    data-entity="laboratories">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-                </td>
+                <% if (permittedRoutes.includes('/laboratories/update') || permittedRoutes.includes('/laboratories/delete')) { %>
+                    <td>
+                        <% if (permittedRoutes.includes('/laboratories/update')) { %>
+                            <a href="/laboratories?editId=<%= laboratory.id_laboratorio %>" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                        <% } %>
+                        <% if (permittedRoutes.includes('/laboratories/delete')) { %>
+                            <!-- Botón con evento SweetAlert2 -->
+                            <button 
+                                class="btn btn-danger btn-sm delete-btn" 
+                                data-id="<%= laboratory.id_laboratorio %>" 
+                                data-entity="laboratories">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        <% } %>
+                    </td>
+                <% } %>
             </tr>
             <% }) %>
         </tbody>
@@ -87,20 +97,15 @@
 </div>
 
 <script>
-
     new DataTable('#laboratories', {
-
         layout: {
-   
             topStart: {
-                buttons:  [
-
+                buttons: [
                     {
                         extend: 'excelHtml5',
                         text: '<i class="fa fa-file-excel-o"></i> Excel',
                         titleAttr: 'Excel'
                     },
-
                     {
                         extend: 'pdfHtml5',
                         text: '<i class="fa fa-file-pdf-o"></i> PDF',
@@ -109,6 +114,5 @@
                 ]
             }
         }
-        
     });
-    </script>
+</script>
