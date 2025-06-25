@@ -75,10 +75,30 @@ exports.deleteLaboratory = async (req, res) => {
     const { id } = req.params;
 
     try {
-        await db.query('DELETE FROM laboratorio WHERE id_laboratorio = ?', [id]);
-        res.redirect('/laboratories');
+        const [result] = await db.query('DELETE FROM laboratorio WHERE id_laboratorio = ?', [id]);
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Laboratorio eliminado correctamente.' });
+        } else {
+            res.status(404).json({ success: false, message: 'Laboratorio no encontrado.' });
+        }
     } catch (error) {
         console.error('Error al eliminar el laboratorio:', error);
-        res.status(500).send('Hubo un error al eliminar el laboratorio.');
+        res.status(500).json({ success: false, message: 'Hubo un error al eliminar el laboratorio.' });
+    }
+};
+
+// Obtener un laboratorio por ID para la API
+exports.getLaboratoryById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [rows] = await db.query('SELECT * FROM laboratorio WHERE id_laboratorio = ?', [id]);
+        if (rows.length > 0) {
+            res.json(rows[0]);
+        } else {
+            res.status(404).json({ message: 'Laboratorio no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al obtener el laboratorio:', error);
+        res.status(500).send('Error interno del servidor');
     }
 };

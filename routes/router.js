@@ -102,7 +102,10 @@ router.post('/laboratories/add', verifyToken, laboratoriesController.addLaborato
 router.post('/laboratories/update', verifyToken, laboratoriesController.updateLaboratory);
 
 // Ruta para eliminar un laboratorio
-router.get('/laboratories/delete/:id', verifyToken, laboratoriesController.deleteLaboratory);
+router.delete('/laboratories/delete/:id', verifyToken, laboratoriesController.deleteLaboratory);
+
+// Ruta de API para obtener un laboratorio por ID (para el modal de edición)
+router.get('/api/laboratories/:id', verifyToken, laboratoriesController.getLaboratoryById);
 
 
 // ----Rutas de Asignaturas--->
@@ -117,7 +120,7 @@ router.post('/signatures/add', verifyToken, signatureController.addSignature);
 router.post('/signatures/update', verifyToken, signatureController.updateSignature);
 
 // Ruta para eliminar asignaturas
-router.get('/signatures/delete/:id', verifyToken, signatureController.deleteSignature);
+router.delete('/signatures/delete/:id', verifyToken, signatureController.deleteSignature);
 
 // Ruta de API para obtener una asignatura por ID (para el modal de edición)
 router.get('/api/signatures/:id', verifyToken, signatureController.getSignatureById);

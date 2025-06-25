@@ -80,12 +80,19 @@ exports.updateTeacher = async (req, res) => {
 // Eliminar un docente
 exports.deleteTeacher = async (req, res) => {
     const { id } = req.params;
-
     try {
-        await db.query('DELETE FROM docente WHERE id_docente = ?', [id]);
-        res.status(200).json({ message: 'Docente eliminado correctamente' }); // Devolver JSON
+        const [result] = await db.query('DELETE FROM docente WHERE id_docente = ?', [id]);
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Docente eliminado correctamente.' });
+        } else {
+            res.status(404).json({ success: false, message: 'Docente no encontrado.' });
+        }
     } catch (error) {
         console.error('Error al eliminar el docente:', error);
-        res.status(500).json({ error: 'Hubo un error al eliminar el docente.' }); // Devolver JSON
+        // Manejo específico para errores de clave foránea
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            return res.status(400).json({ success: false, message: 'No se puede eliminar el docente porque está asignado a una asignatura o laboratorio. Por favor, reasigne o elimine esos registros primero.' });
+        }
+        res.status(500).json({ success: false, message: 'Error interno del servidor.' });
     }
 };

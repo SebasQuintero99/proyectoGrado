@@ -140,16 +140,23 @@ exports.updateSignature = async (req, res) => {
     }
 };
 
-// Eliminar una asignatura
+// Eliminar una asignatura de forma asíncrona
 exports.deleteSignature = async (req, res) => {
     const { id } = req.params;
-    
     try {
-        await db.query('DELETE FROM asignatura WHERE id_asignatura = ?', [id]);
-        res.redirect('/signatures');
+        const [result] = await db.query('DELETE FROM asignatura WHERE id_asignatura = ?', [id]);
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Asignatura eliminada correctamente.' });
+        } else {
+            res.status(404).json({ success: false, message: 'Asignatura no encontrada.' });
+        }
     } catch (error) {
         console.error('Error al eliminar la asignatura:', error);
-        res.status(500).send('Hubo un error al eliminar la asignatura.');
+        // Manejo específico para errores de clave foránea
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            return res.status(400).json({ success: false, message: 'No se puede eliminar la asignatura porque está asignada a un horario. Por favor, elimine los horarios asociados primero.' });
+        }
+        res.status(500).json({ success: false, message: 'Error interno del servidor.' });
     }
 };
 

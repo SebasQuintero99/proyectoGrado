@@ -1,99 +1,93 @@
-<div>
-    <h1>Gestión de Laboratorios</h1>
-
-    <!-- Formulario de Agregar/Editar Laboratorio -->
-    <% if (permittedRoutes.includes('/laboratories/add')) { %>
-        <form action="<%= laboratoryToEdit ? '/laboratories/update' : '/laboratories/add' %>" method="POST" class="mb-4">
-            <% if (laboratoryToEdit) { %>
-                <input type="hidden" name="id_laboratorio" value="<%= laboratoryToEdit.id_laboratorio %>">
-            <% } %>
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input 
-                    type="text" 
-                    name="nombre" 
-                    class="form-control w-50" 
-                    placeholder="Nombre del laboratorio" 
-                    value="<%= laboratoryToEdit ? laboratoryToEdit.nombre : '' %>" 
-                    required>
-            </div>
-            <div class="mb-3">
-                <label for="capacidad" class="form-label">Capacidad</label>
-                <input 
-                    type="number" 
-                    name="capacidad" 
-                    class="form-control w-25" 
-                    placeholder="Capacidad" 
-                    value="<%= laboratoryToEdit ? laboratoryToEdit.capacidad : '' %>" 
-                    required>
-            </div>
-            <div class="mb-3">
-                <label for="id_docente" class="form-label">Docente</label>
-                <select name="id_docente" id="id_docente" class="form-select w-50" required>
-                    <option value="">Seleccione un docente</option>
-                    <% teachers.forEach(teacher => { %>
-                        <option value="<%= teacher.id_docente %>" <%= laboratoryToEdit && laboratoryToEdit.id_docente === teacher.id_docente ? 'selected' : '' %>>
-                            <%= teacher.nombre %> (<%= teacher.email %>)
-                        </option>
-                    <% }) %>
-                </select>
-            </div>
-            <button type="submit" class="btn <%= laboratoryToEdit ? 'btn-warning' : 'btn-success' %>">
-                <%= laboratoryToEdit ? 'Actualizar' : 'Agregar' %>
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">
+            <i class="fas fa-flask me-2"></i>Gestión de Laboratorios
+        </h4>
+        <% if (permittedRoutes.includes('/laboratories/add')) { %>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#laboratoryModal" id="addLaboratoryBtn">
+                <i class="fas fa-plus me-1"></i> Agregar
             </button>
-            <% if (laboratoryToEdit) { %>
-                <a href="/laboratories" class="btn btn-secondary mt-2">Cancelar</a>
-            <% } %>
-        </form>
-    <% } %>
-
-    <!-- Tabla de Laboratorios -->
-    <table id="laboratories" class="table table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Capacidad</th>
-                <th>Docente</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <% if (permittedRoutes.includes('/laboratories/update') || permittedRoutes.includes('/laboratories/delete')) { %>
-                    <th>Acciones</th>
-                <% } %>
-            </tr>
-        </thead>
-        <tbody id="laboratories-table-body">
-            <% laboratories.forEach((laboratory, index) => { %>
-            <tr>
-                <td><%= index + 1 %></td>
-                <td><%= laboratory.nombre %></td>
-                <td><%= laboratory.capacidad %></td>
-                <td><%= laboratory.docente_nombre || 'No asignado' %></td>
-                <td><%= laboratory.docente_email || 'No disponible' %></td>
-                <td><%= laboratory.docente_telefono || 'No disponible' %></td>
-                <% if (permittedRoutes.includes('/laboratories/update') || permittedRoutes.includes('/laboratories/delete')) { %>
-                    <td>
-                        <% if (permittedRoutes.includes('/laboratories/update')) { %>
-                            <a href="/laboratories?editId=<%= laboratory.id_laboratorio %>" class="btn btn-primary btn-sm">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
+        <% } %>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="laboratories" class="table table-hover table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Nombre</th>
+                        <th class="text-center">Capacidad</th>
+                        <th>Docente a Cargo</th>
+                        <% if (permittedRoutes.includes('/laboratories/update') || permittedRoutes.includes('/laboratories/delete')) { %>
+                            <th class="text-center">Acciones</th>
                         <% } %>
-                        <% if (permittedRoutes.includes('/laboratories/delete')) { %>
-                            <!-- Botón con evento SweetAlert2 -->
-                            <button 
-                                class="btn btn-danger btn-sm delete-btn" 
-                                data-id="<%= laboratory.id_laboratorio %>" 
-                                data-entity="laboratories">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                    </tr>
+                </thead>
+                <tbody id="laboratories-table-body">
+                    <% laboratories.forEach((laboratory, index) => { %>
+                    <tr>
+                        <td class="text-center"><%= index + 1 %></td>
+                        <td><%= laboratory.nombre %></td>
+                        <td class="text-center"><%= laboratory.capacidad %></td>
+                        <td><%= laboratory.docente_nombre %></td>
+                        <% if (permittedRoutes.includes('/laboratories/update') || permittedRoutes.includes('/laboratories/delete')) { %>
+                            <td class="text-center">
+                                <% if (permittedRoutes.includes('/laboratories/update')) { %>
+                                    <button type="button" class="btn btn-primary btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#laboratoryModal" data-id="<%= laboratory.id_laboratorio %>">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                <% } %>
+                                <% if (permittedRoutes.includes('/laboratories/delete')) { %>
+                                    <button class="btn btn-danger btn-sm delete-btn" data-id="<%= laboratory.id_laboratorio %>" data-entity="laboratories">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                <% } %>
+                            </td>
                         <% } %>
-                    </td>
-                <% } %>
-            </tr>
-            <% }) %>
-        </tbody>
-    </table>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
+<!-- Modal para Agregar/Editar Laboratorio -->
+<div class="modal fade" id="laboratoryModal" tabindex="-1" aria-labelledby="laboratoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="laboratoryModalLabel">Agregar Laboratorio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="laboratoryForm" method="POST">
+                    <input type="hidden" name="id_laboratorio" id="id_laboratorio">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre del Laboratorio</label>
+                        <input type="text" name="nombre" id="nombre" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="capacidad" class="form-label">Capacidad</label>
+                        <input type="number" name="capacidad" id="capacidad" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_docente" class="form-label">Docente a Cargo</label>
+                        <select name="id_docente" id="id_docente" class="form-select" required>
+                            <option value="" disabled>Seleccione un docente</option>
+                            <% teachers.forEach(teacher => { %>
+                                <option value="<%= teacher.id_docente %>"><%= teacher.nombre %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i>Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="submitButton"><i class="fas fa-save me-1"></i>Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -101,18 +95,70 @@
         layout: {
             topStart: {
                 buttons: [
-                    {
-                        extend: 'excelHtml5',
-                        text: '<i class="fa fa-file-excel-o"></i> Excel',
-                        titleAttr: 'Excel'
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        text: '<i class="fa fa-file-pdf-o"></i> PDF',
-                        titleAttr: 'PDF'
-                    }
+                    { extend: 'excelHtml5', text: '<i class="fa fa-file-excel-o"></i> Excel', titleAttr: 'Excel', className: 'btn btn-success' },
+                    { extend: 'pdfHtml5', text: '<i class="fa fa-file-pdf-o"></i> PDF', titleAttr: 'PDF', className: 'btn btn-danger' }
                 ]
             }
         }
     });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const laboratoryModal = document.getElementById('laboratoryModal');
+    const laboratoryForm = document.getElementById('laboratoryForm');
+    const modalTitle = document.getElementById('laboratoryModalLabel');
+    const submitButton = document.getElementById('submitButton');
+    const hiddenIdInput = document.getElementById('id_laboratorio');
+
+    const setupAddForm = () => {
+        laboratoryForm.reset();
+        laboratoryForm.action = '/laboratories/add';
+        modalTitle.textContent = 'Agregar Laboratorio';
+        submitButton.innerHTML = '<i class="fas fa-plus me-1"></i> Agregar';
+        submitButton.className = 'btn btn-success';
+        hiddenIdInput.value = '';
+        document.getElementById('id_docente').value = ''; // Reset select
+    };
+
+    document.getElementById('addLaboratoryBtn')?.addEventListener('click', setupAddForm);
+
+    $('#laboratories').on('click', '.edit-btn', async function () {
+        const labId = $(this).data('id');
+
+        laboratoryForm.reset();
+        laboratoryForm.action = '/laboratories/update';
+        modalTitle.textContent = 'Editar Laboratorio';
+        submitButton.innerHTML = '<i class="fas fa-save me-1"></i> Actualizar';
+        submitButton.className = 'btn btn-warning';
+        hiddenIdInput.value = labId;
+
+        try {
+            const response = await fetch(`/api/laboratories/${labId}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (!response.ok) throw new Error('Error al cargar datos del laboratorio.');
+
+            const data = await response.json();
+            document.getElementById('nombre').value = data.nombre;
+            document.getElementById('capacidad').value = data.capacidad;
+            document.getElementById('id_docente').value = data.id_docente;
+
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire('Error', 'No se pudieron cargar los datos para editar.', 'error');
+        }
+    });
+
+    laboratoryForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const isUpdate = !!hiddenIdInput.value;
+        Swal.fire({
+            title: isUpdate ? '¡Actualizado!' : '¡Agregado!',
+            text: `El laboratorio ha sido ${isUpdate ? 'actualizado' : 'agregado'}.`,
+            icon: 'success',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        }).then(() => laboratoryForm.submit());
+    });
+});
 </script>
