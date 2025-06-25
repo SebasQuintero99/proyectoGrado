@@ -2,7 +2,7 @@
   "roles": {
     "1": {
       "rutas": ["/home", "/classes","/classes/*", "/classes/add", "/classes/update", "/classes/delete", "/classes/delete/*",
-                "/teachers", "/teachers/add", "/teachers/update", "/teachers/delete", "/teachers/delete/*",
+                "/teachers", "/teachers/add", "/teachers/update", "/teachers/delete", "/teachers/delete/*", "/api/teachers/*",
                 "/programs", "/programs/add", "/programs/update", "/programs/delete", "/programs/delete/*",
                 "/signatures", "/signatures/add", "/signatures/update", "/signatures/delete", "/signatures/delete/*", "/api/signatures/*",
                 "/laboratories", "/laboratories/add", "/laboratories/update","/laboratories/delete", "/laboratories/delete/*",

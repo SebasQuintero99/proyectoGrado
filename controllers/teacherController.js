@@ -27,6 +27,22 @@ exports.listTeachers = async (req, res) => {
     }
 };
 
+// Obtener un docente por ID para la API
+exports.getTeacherById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [rows] = await db.query('SELECT * FROM docente WHERE id_docente = ?', [id]);
+        if (rows.length > 0) {
+            res.json(rows[0]);
+        } else {
+            res.status(404).json({ error: 'Docente no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al obtener el docente por ID:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+
 // Agregar un nuevo docente
 exports.addTeacher = async (req, res) => {
     const { nombre, email, telefono } = req.body;
@@ -67,9 +83,9 @@ exports.deleteTeacher = async (req, res) => {
 
     try {
         await db.query('DELETE FROM docente WHERE id_docente = ?', [id]);
-        res.redirect('/teachers');
+        res.status(200).json({ message: 'Docente eliminado correctamente' }); // Devolver JSON
     } catch (error) {
         console.error('Error al eliminar el docente:', error);
-        res.status(500).send('Hubo un error al eliminar el docente.');
+        res.status(500).json({ error: 'Hubo un error al eliminar el docente.' }); // Devolver JSON
     }
 };

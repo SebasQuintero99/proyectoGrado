@@ -1,93 +1,93 @@
-<div>
-    <h1>Gestión de Docentes</h1>
-
-    <!-- Formulario de Agregar/Editar Docente -->
-    <% if (permittedRoutes.includes('/teachers/add')) { %>
-        <form action="<%= teacherToEdit ? '/teachers/update' : '/teachers/add' %>" method="POST" class="mb-4">
-            <% if (teacherToEdit) { %>
-                <input type="hidden" name="id_docente" value="<%= teacherToEdit.id_docente %>">
-            <% } %>
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input 
-                    type="text" 
-                    name="nombre" 
-                    class="form-control w-50" 
-                    placeholder="Nombre del docente" 
-                    value="<%= teacherToEdit ? teacherToEdit.nombre : '' %>" 
-                    required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <input 
-                    type="email" 
-                    name="email" 
-                    class="form-control w-50" 
-                    placeholder="Correo del docente" 
-                    value="<%= teacherToEdit ? teacherToEdit.email : '' %>" 
-                    required>
-            </div>
-            <div class="mb-3">
-                <label for="telefono" class="form-label">Teléfono</label>
-                <input 
-                    type="text" 
-                    name="telefono" 
-                    class="form-control w-50" 
-                    placeholder="Teléfono del docente" 
-                    value="<%= teacherToEdit ? teacherToEdit.telefono : '' %>" 
-                    required>
-            </div>
-            <button type="submit" class="btn <%= teacherToEdit ? 'btn-warning' : 'btn-success' %>">
-                <%= teacherToEdit ? 'Actualizar' : 'Agregar' %>
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">
+            <i class="fas fa-chalkboard-teacher me-2"></i>Gestión de Docentes
+        </h4>
+        <% if (permittedRoutes.includes('/teachers/add')) { %>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#teacherModal" id="addTeacherBtn">
+                <i class="fas fa-plus me-1"></i> Agregar
             </button>
-            <% if (teacherToEdit) { %>
-                <a href="/teachers" class="btn btn-secondary mt-2">Cancelar</a>
-            <% } %>
-        </form>
-    <% } %>
-
-    <!-- Tabla de Docentes -->
-    <table id="teachers" class="table table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <% if (permittedRoutes.includes('/teachers/update') || permittedRoutes.includes('/teachers/delete')) { %>
-                    <th>Acciones</th>
-                <% } %>
-            </tr>
-        </thead>
-        <tbody id="teachers-table-body">
-            <% teachers.forEach((teacher, index) => { %>
-            <tr>
-                <td><%= index + 1 %></td>
-                <td><%= teacher.nombre %></td>
-                <td><%= teacher.email %></td>
-                <td><%= teacher.telefono %></td>
-                <% if (permittedRoutes.includes('/teachers/update') || permittedRoutes.includes('/teachers/delete')) { %>
-                    <td>
-                        <% if (permittedRoutes.includes('/teachers/update')) { %>
-                            <a href="/teachers?editId=<%= teacher.id_docente %>" class="btn btn-primary btn-sm">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
+        <% } %>
+    </div>
+    <div class="card-body">
+        <!-- Tabla de Docentes -->
+        <div class="table-responsive">
+            <table id="teachers" class="table table-hover table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Email</th>
+                        <th class="text-center">Teléfono</th>
+                        <% if (permittedRoutes.includes('/teachers/update') || permittedRoutes.includes('/teachers/delete')) { %>
+                            <th class="text-center">Acciones</th>
                         <% } %>
-                        <% if (permittedRoutes.includes('/teachers/delete')) { %>
-                            <button 
-                                class="btn btn-danger btn-sm delete-btn" 
-                                data-id="<%= teacher.id_docente %>" 
-                                data-entity="teachers">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                    </tr>
+                </thead>
+                <tbody id="teachers-table-body">
+                    <% teachers.forEach((teacher, index) => { %>
+                    <tr>
+                        <td class="text-center"><%= index + 1 %></td>
+                        <td><%= teacher.nombre %></td>
+                        <td><%= teacher.email %></td>
+                        <td class="text-center"><%= teacher.telefono %></td>
+                        <% if (permittedRoutes.includes('/teachers/update') || permittedRoutes.includes('/teachers/delete')) { %>
+                            <td class="text-center">
+                                <% if (permittedRoutes.includes('/teachers/update')) { %>
+                                    <button type="button" class="btn btn-primary btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#teacherModal" data-id="<%= teacher.id_docente %>">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                <% } %>
+                                <% if (permittedRoutes.includes('/teachers/delete')) { %>
+                                    <button class="btn btn-danger btn-sm delete-btn" data-id="<%= teacher.id_docente %>" data-entity="teachers">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                <% } %>
+                            </td>
                         <% } %>
-                    </td>
-                <% } %>
-            </tr>
-            <% }) %>
-        </tbody>
-    </table>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
+<!-- Modal para Agregar/Editar Docente -->
+<div class="modal fade" id="teacherModal" tabindex="-1" aria-labelledby="teacherModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="teacherModalLabel">Agregar Docente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="teacherForm" method="POST">
+                    <input type="hidden" name="id_docente" id="id_docente">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Nombre del docente" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Correo Electrónico</label>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="correo@ejemplo.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" name="telefono" id="telefono" class="form-control" placeholder="3001234567" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitButton">
+                            <i class="fas fa-save me-1"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -98,15 +98,89 @@
                     {
                         extend: 'excelHtml5',
                         text: '<i class="fa fa-file-excel-o"></i> Excel',
-                        titleAttr: 'Excel'
+                        titleAttr: 'Excel',
+                        className: 'btn btn-success' 
                     },
                     {
                         extend: 'pdfHtml5',
                         text: '<i class="fa fa-file-pdf-o"></i> PDF',
-                        titleAttr: 'PDF'
+                        titleAttr: 'PDF',
+                        className: 'btn btn-danger' 
                     }
                 ]
             }
         }
     });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const teacherModal = document.getElementById('teacherModal');
+    const teacherForm = document.getElementById('teacherForm');
+    const modalTitle = document.getElementById('teacherModalLabel');
+    const submitButton = document.getElementById('submitButton');
+    const hiddenIdInput = document.getElementById('id_docente');
+
+    const setupAddForm = () => {
+        teacherForm.reset();
+        teacherForm.action = '/teachers/add';
+        modalTitle.textContent = 'Agregar Docente';
+        submitButton.textContent = 'Agregar';
+        submitButton.className = 'btn btn-success';
+        hiddenIdInput.value = '';
+    };
+
+    document.getElementById('addTeacherBtn')?.addEventListener('click', setupAddForm);
+
+    $('#teachers').on('click', '.edit-btn', async function () {
+        const teacherId = $(this).data('id');
+
+        teacherForm.reset();
+        teacherForm.action = '/teachers/update';
+        modalTitle.textContent = 'Editar Docente';
+        submitButton.textContent = 'Actualizar';
+        submitButton.className = 'btn btn-warning';
+        hiddenIdInput.value = teacherId;
+
+        try {
+            const response = await fetch(`/api/teachers/${teacherId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error al obtener los datos. Estado: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            document.getElementById('nombre').value = data.nombre;
+            document.getElementById('email').value = data.email;
+            document.getElementById('telefono').value = data.telefono;
+
+        } catch (error) {
+            console.error('Error al cargar datos para editar:', error);
+            Swal.fire('Error', 'No se pudieron cargar los datos.', 'error');
+        }
+    });
+
+    teacherForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const isUpdate = !!hiddenIdInput.value;
+        const title = isUpdate ? '¡Actualizado!' : '¡Agregado!';
+        const text = isUpdate ? 'El docente ha sido actualizado.' : 'El docente ha sido agregado.';
+
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: 'success',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+        }).then(() => {
+            teacherForm.submit();
+        });
+    });
+});
 </script>

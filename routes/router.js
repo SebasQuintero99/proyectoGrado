@@ -136,7 +136,10 @@ router.post('/teachers/add', verifyToken, teacherController.addTeacher);
 router.post('/teachers/update', verifyToken, teacherController.updateTeacher);
 
 // Ruta para eliminar un docente
-router.get('/teachers/delete/:id', verifyToken, teacherController.deleteTeacher);
+router.delete('/teachers/delete/:id', verifyToken, teacherController.deleteTeacher);
+
+// Ruta de API para obtener un docente por ID (para el modal de edición)
+router.get('/api/teachers/:id', verifyToken, teacherController.getTeacherById);
 
 
 
