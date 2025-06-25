@@ -114,37 +114,39 @@
     <% } %>
 
     <!-- Tabla de Asignaturas -->
-    <table id="signatures" class="table table-striped" style="width:100%">
-        <thead>
+  
+    <div class="table-responsive">
+    <table id="signatures" class="table table-hover table-bordered">
+        <thead class="table-light">
             <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Grupo</th>
-                <th>Código Materia</th>
-                <th>#Número de Curso</th>
-                <th>Semestre</th>
-                <th>Docente</th>
-                <th>Programa</th>
-                <th>Número de Créditos</th>
+                <th class="text-center">#</th>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Grupo</th>
+                <th class="text-center">Código Materia</th>
+                <th class="text-center">#Número de Curso</th>
+                <th class="text-center">Semestre</th>
+                <th class="text-center">Docente</th>
+                <th class="text-center">Programa</th>
+                <th class="text-center">Número de Créditos</th>
                 <% if (permittedRoutes.includes('/signatures/update') || permittedRoutes.includes('/signatures/delete')) { %>
-                    <th>Acciones</th>
+                    <th class="text-center">Acciones</th>
                 <% } %>
             </tr>
         </thead>
         <tbody id="signatures-table-body">
             <% signatures.forEach((signature, index) => { %>
             <tr>
-                <td><%= index + 1 %></td>
-                <td><%= signature.nombre %></td>
-                <td><%= signature.grupo %></td>
-                <td><%= signature.codigo_materia %></td>
-                <td><%= signature.numero_curso %></td>
-                <td><%= signature.semestre %></td>
-                <td><%= signature.docente_nombre || 'No asignado' %></td>
-                <td><%= signature.nombre_programa || 'No asignado' %></td>
-                <td><%= signature.numero_creditos %></td>
+                <td class="text-center"><%= index + 1 %></td>
+                <td class="text-center"><%= signature.nombre %></td>
+                <td class="text-center"><%= signature.grupo %></td>
+                <td class="text-center"><%= signature.codigo_materia %></td>
+                <td class="text-center"><%= signature.numero_curso %></td>
+                <td class="text-center"><%= signature.semestre %></td>
+                <td class="text-center"><%= signature.docente_nombre || 'No asignado' %></td>
+                <td class="text-center"><%= signature.nombre_programa || 'No asignado' %></td>
+                <td class="text-center"><%= signature.numero_creditos %></td>
                 <% if (permittedRoutes.includes('/signatures/update') || permittedRoutes.includes('/signatures/delete')) { %>
-                    <td>
+                    <td class="text-center">
                         <% if (permittedRoutes.includes('/signatures/update')) { %>
                             <a href="/signatures?editId=<%= signature.id_asignatura %>" class="btn btn-primary btn-sm">
                                 <i class="fa-solid fa-pen-to-square"></i>
@@ -166,6 +168,7 @@
     </table>
 </div>
 
+
 <script>
     new DataTable('#signatures', {
         layout: {
@@ -174,12 +177,14 @@
                     {
                         extend: 'excelHtml5',
                         text: '<i class="fa fa-file-excel-o"></i> Excel',
-                        titleAttr: 'Excel'
+                        titleAttr: 'Excel',
+                        className: 'btn btn-success' 
                     },
                     {
                         extend: 'pdfHtml5',
                         text: '<i class="fa fa-file-pdf-o"></i> PDF',
-                        titleAttr: 'PDF'
+                        titleAttr: 'PDF',
+                        className: 'btn btn-danger' 
                     }
                 ]
             }
