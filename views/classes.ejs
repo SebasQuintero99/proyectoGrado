@@ -1,210 +1,257 @@
-<h1>Gestión de Clases</h1>
-
-<!-- Mensaje de error (opcional) -->
-<% if (typeof error !== 'undefined' && error) { %>
-    <div class="alert alert-danger" role="alert">
-        <%= error %>
-    </div>
-<% } %>
-
-<!-- Filtros (Laboratorio y Semestre) -->
-<form method="GET" action="/classes" id="filterForm" class="mb-4">
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="id_laboratorio" class="form-label">Laboratorio</label>
-            <select name="selectedLaboratory" id="id_laboratorio" class="form-select w-100" onchange="document.getElementById('filterForm').submit()" required>
-                <option value="">Seleccione un laboratorio</option>
-                <% laboratories.forEach(lab => { %>
-                    <option value="<%= lab.id_laboratorio %>" <%= selectedLaboratory == lab.id_laboratorio ? 'selected' : '' %>>
-                        <%= lab.nombre %>
-                    </option>
-                <% }) %>
-            </select>
-        </div>
-
-            <!-- Selector de Semestres -->
-            <div class="col-md-6 mb-3">
-                <label for="selectedSemester" class="form-label">Semestre</label>
-                <select name="selectedSemester" id="selectedSemester" class="form-select w-100">
-                    <option value="">Todos los semestres</option>
-                    <% semesters.forEach(semestre => { %>
-                        <option value="<%= semestre %>" <%= selectedSemester == semestre ? 'selected' : '' %>><%= semestre %></option>
-                    <% }) %>
-                </select>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clases</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="/css/schedule.css">
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h4 class="mb-0">
+                    <i class="fas fa-calendar-alt me-2"></i>Gestión de Clases
+                </h4>
             </div>
-    </div>
-</form>
+            <div class="card-body">
+                <!-- Mensaje de error (opcional) -->
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                <% } %>
 
-<!-- Formulario de Agregar/Editar Clase -->
-<% if (permittedRoutes.includes('/classes/add')) { %>
-    <form action="<%= classToEdit ? '/classes/update' : '/classes/add' %>" method="POST" class="mb-4">
-        <% if (classToEdit) { %>
-            <input type="hidden" name="id_clase" value="<%= classToEdit.id_clase %>">
-        <% } %>
-        <input type="hidden" name="id_laboratorio" value="<%= selectedLaboratory %>">
+                <!-- Filtros (Laboratorio) -->
+                <form method="GET" action="/classes" id="filterForm" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="id_laboratorio" class="form-label">Laboratorio</label>
+                            <select name="selectedLaboratory" id="id_laboratorio" class="form-select w-100" onchange="document.getElementById('filterForm').submit()" required>
+                                <option value="">Seleccione un laboratorio</option>
+                                <% laboratories.forEach(lab => { %>
+                                    <option value="<%= lab.id_laboratorio %>" <%= selectedLaboratory == lab.id_laboratorio ? 'selected' : '' %>>
+                                        <%= lab.nombre %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                </form>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="id_asignatura" class="form-label">Asignatura</label>
-                <select name="id_asignatura" id="id_asignatura" class="form-select" required>
-                    <option value="">Seleccione una asignatura</option>
-                    <% subjects.forEach(subject => { %>
-                        <option value="<%= subject.id_asignatura %>" 
-                                <%= classToEdit && classToEdit.id_asignatura === subject.id_asignatura ? 'selected' : '' %>>
-                            <%= subject.nombre %>
-                        </option>
-                    <% }) %>
-                </select>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="dia_semana" class="form-label">Día de la Semana</label>
-                <select name="dia_semana" id="dia_semana" class="form-select" required>
-                    <option value="">Seleccione un día</option>
-                    <option value="Lunes" <%= classToEdit && classToEdit.dia_semana === 'Lunes' ? 'selected' : '' %>>Lunes</option>
-                    <option value="Martes" <%= classToEdit && classToEdit.dia_semana === 'Martes' ? 'selected' : '' %>>Martes</option>
-                    <option value="Miércoles" <%= classToEdit && classToEdit.dia_semana === 'Miércoles' ? 'selected' : '' %>>Miércoles</option>
-                    <option value="Jueves" <%= classToEdit && classToEdit.dia_semana === 'Jueves' ? 'selected' : '' %>>Jueves</option>
-                    <option value="Viernes" <%= classToEdit && classToEdit.dia_semana === 'Viernes' ? 'selected' : '' %>>Viernes</option>
-                    <option value="Sábado" <%= classToEdit && classToEdit.dia_semana === 'Sábado' ? 'selected' : '' %>>Sábado</option>
-                </select>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="hora_inicio" class="form-label">Hora de Inicio</label>
-                <input 
-                    type="time" 
-                    name="hora_inicio" 
-                    id="hora_inicio" 
-                    class="form-control" 
-                    value="<%= classToEdit ? classToEdit.hora_inicio : '' %>" 
-                    required>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="hora_fin" class="form-label">Hora de Fin</label>
-                <input 
-                    type="time" 
-                    name="hora_fin" 
-                    id="hora_fin" 
-                    class="form-control" 
-                    value="<%= classToEdit ? classToEdit.hora_fin : '' %>" 
-                    required>
-            </div>
-        </div>
-
-        <button type="submit" class="btn <%= classToEdit ? 'btn-warning' : 'btn-success' %>">
-            <%= classToEdit ? 'Actualizar' : 'Agregar' %>
-        </button>
-        <% if (classToEdit) { %>
-            <a href="/classes" class="btn btn-secondary mt-2">Cancelar</a>
-        <% } %>
-    </form>
-<% } %>
-
-<!-- Tabla de Clases -->
-<table id="classes" class="table table-bordered text-center classes-table">
-    <thead>
-        <tr>
-            <th class="hour-column">Horas</th>
-            <th class="day-column">Lunes</th>
-            <th class="day-column">Martes</th>
-            <th class="day-column">Miércoles</th>
-            <th class="day-column">Jueves</th>
-            <th class="day-column">Viernes</th>
-            <th class="day-column">Sábado</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% 
-            const horarios = [...new Set(classes.map(classItem => classItem.hora_inicio))].sort();
-
-            horarios.forEach(hora => { 
-        %>
-            <tr>
-                <td><%= hora %></td>
-
-                <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'].forEach(dia => { 
-                    const clase = classes.find(classItem => 
-                        classItem.hora_inicio <= hora && classItem.hora_fin > hora && classItem.dia_semana === dia
-                    );
-
-                    if (clase) { %>
-                        <td class="day-column" style="background-color: <%= clase.asignatura_color %>; color: black;">
-                            <div class="d-flex justify-content-end">
-                                <% if (permittedRoutes.includes('/classes/update')) { %>
-                                    <a href="/classes?editId=<%= clase.id_clase %>" class="btn btn-primary btn-sm">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </a>
+                <!-- Formulario de Agregar/Editar Clase -->
+                <% if (permittedRoutes.includes('/classes/add')) { %>
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">
+                                <i class="fas fa-calendar-plus me-2"></i><%= classToEdit ? 'Editar Clase' : 'Agregar Nueva Clase' %>
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="<%= classToEdit ? '/classes/update' : '/classes/add' %>" method="POST">
+                                <% if (classToEdit) { %>
+                                    <input type="hidden" name="id_clase" value="<%= classToEdit.id_clase %>">
                                 <% } %>
-                                <% if (permittedRoutes.includes('/classes/delete')) { %>
-                                    <button 
-                                        class="btn btn-danger btn-sm delete-btn ms-1" 
-                                        data-id="<%= clase.id_clase %>" 
-                                        data-entity="classes">
-                                        <i class="fa-solid fa-trash"></i>
+                                <input type="hidden" name="id_laboratorio" value="<%= selectedLaboratory %>">
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_asignatura" class="form-label">Asignatura</label>
+                                        <select name="id_asignatura" id="id_asignatura" class="form-select" required>
+                                            <option value="">Seleccione una asignatura</option>
+                                            <% subjects.forEach(subject => { %>
+                                                <option value="<%= subject.id_asignatura %>" 
+                                                        <%= classToEdit && classToEdit.id_asignatura === subject.id_asignatura ? 'selected' : '' %>>
+                                                    <%= subject.nombre %>
+                                                </option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Selector de Semestres -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="selectedSemester" class="form-label">Semestre</label>
+                                        <select name="selectedSemester" id="selectedSemester" class="form-select w-100">
+                                            <option value="">Todos los semestres</option>
+                                            <% semesters.forEach(semestre => { %>
+                                                <option value="<%= semestre %>" <%= selectedSemester == semestre ? 'selected' : '' %>><%= semestre %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="dia_semana" class="form-label">Día de la Semana</label>
+                                        <select name="dia_semana" id="dia_semana" class="form-select" required>
+                                            <option value="">Seleccione un día</option>
+                                            <option value="Lunes" <%= classToEdit && classToEdit.dia_semana === 'Lunes' ? 'selected' : '' %>>Lunes</option>
+                                            <option value="Martes" <%= classToEdit && classToEdit.dia_semana === 'Martes' ? 'selected' : '' %>>Martes</option>
+                                            <option value="Miércoles" <%= classToEdit && classToEdit.dia_semana === 'Miércoles' ? 'selected' : '' %>>Miércoles</option>
+                                            <option value="Jueves" <%= classToEdit && classToEdit.dia_semana === 'Jueves' ? 'selected' : '' %>>Jueves</option>
+                                            <option value="Viernes" <%= classToEdit && classToEdit.dia_semana === 'Viernes' ? 'selected' : '' %>>Viernes</option>
+                                            <option value="Sábado" <%= classToEdit && classToEdit.dia_semana === 'Sábado' ? 'selected' : '' %>>Sábado</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="hora_inicio" class="form-label">Hora de Inicio</label>
+                                        <input 
+                                            type="time" 
+                                            name="hora_inicio" 
+                                            id="hora_inicio" 
+                                            class="form-control" 
+                                            value="<%= classToEdit ? classToEdit.hora_inicio : '' %>" 
+                                            required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="hora_fin" class="form-label">Hora de Fin</label>
+                                        <input 
+                                            type="time" 
+                                            name="hora_fin" 
+                                            id="hora_fin" 
+                                            class="form-control" 
+                                            value="<%= classToEdit ? classToEdit.hora_fin : '' %>" 
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <% if (classToEdit) { %>
+                                        <a href="/classes?selectedLaboratory=<%= selectedLaboratory %>&selectedSemester=<%= selectedSemester %>" class="btn btn-secondary me-2">
+                                            <i class="fas fa-times me-1"></i> Cancelar
+                                        </a>
+                                    <% } %>
+                                    <button type="submit" class="btn <%= classToEdit ? 'btn-warning' : 'btn-primary' %>">
+                                        <i class="fas <%= classToEdit ? 'fa-save' : 'fa-plus-circle' %> me-1"></i>
+                                        <%= classToEdit ? 'Guardar Cambios' : 'Agregar Clase' %>
                                     </button>
-                                <% } %>
-                            </div>
-                            <div>
-                                <strong><%= clase.asignatura_nombre %></strong><br>
-                                <small><strong>N° curso:</strong> <%= clase.numero_curso %></small><br>
-                                <small><strong>Grupo:</strong> <%= clase.grupo %></small><br>
-                                <small><strong>Semestre:</strong> <%= clase.semestre %></small><br>
-                                <small><strong>Docente: </strong><%= clase.docente_nombre || 'Sin profesor' %></small><br>
-                                <small><strong>Horario: </strong><%= clase.hora_inicio %> - <%= clase.hora_fin %></small>
-                            </div>
-                        </td>
-                    <% } else { %>
-                        <td class="day-column">Sin Asignar</td>
-                    <% } 
-                }); %>
-            </tr>
-        <% }); %>
-    </tbody>
-</table>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                <% } %>
 
-<script>
-    document.getElementById('selectedSemester').addEventListener('change', function() {
-        const semester = this.value;
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        if (semester) {
-            urlParams.set('selectedSemester', semester); // Actualiza el parámetro en la URL
-        } else {
-            urlParams.delete('selectedSemester'); // Si no hay semestre seleccionado, lo elimina
-        }
+                <!-- Tabla de Clases -->
+                <div class="table-responsive">
+                    <table id="classes" class="table table-bordered text-center classes-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="hour-column">Horas</th>
+                                <th>Lunes</th>
+                                <th>Martes</th>
+                                <th>Miércoles</th>
+                                <th>Jueves</th>
+                                <th>Viernes</th>
+                                <th>Sábado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% 
+                                const horarios = [...new Set(classes.map(classItem => classItem.hora_inicio))].sort();
+                                horarios.forEach(hora => { 
+                            %>
+                                <tr>
+                                    <td class="hour-column"><%= hora %></td>
+                                    <% ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'].forEach(dia => { 
+                                        const clase = classes.find(classItem => 
+                                            classItem.hora_inicio <= hora && classItem.hora_fin > hora && classItem.dia_semana === dia
+                                        );
 
-        window.location.search = urlParams.toString(); // Recarga la página con la nueva URL
-    });
-</script>
+                                        if (clase) { %>
+                                            <td class="day-column p-1">
+                                                <div class="class-card" style="--class-color: <%= clase.asignatura_color || '#f0f0f0' %>;">
+                                                    <div class="class-card-header">
+                                                        <% if (permittedRoutes.includes('/classes/update')) { %>
+                                                            <a href="/classes?editId=<%= clase.id_clase %>" class="btn btn-primary btn-sm">
+                                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                            </a>
+                                                        <% } %>
+                                                        <% if (permittedRoutes.includes('/classes/delete')) { %>
+                                                            <button 
+                                                                class="btn btn-danger btn-sm delete-btn ms-1" 
+                                                                data-id="<%= clase.id_clase %>" 
+                                                                data-entity="classes">
+                                                                <i class="fa-solid fa-trash"></i>
+                                                            </button>
+                                                        <% } %>
+                                                    </div>
+                                                    <div class="class-card-body">
+                                                        <strong><%= clase.asignatura_nombre %></strong>
+                                                        <small><strong>Curso:</strong> <%= clase.numero_curso %></small>
+                                                        <small><strong>Grupo:</strong> <%= clase.grupo %></small>
+                                                        <small><strong>Docente:</strong> <%= clase.docente_nombre || 'N/A' %></small>
+                                                        <small><strong>Horario:</strong> <%= clase.hora_inicio %> - <%= clase.hora_fin %></small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        <% } else { %>
+                                            <td class="day-column empty-cell">Sin Asignar</td>
+                                        <% } 
+                                    }); %>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
-
-<script>
-    new DataTable('#classes', {
-        paging: false,
-        layout: {
-            topStart: {
-                buttons: [
-                    {
-                        extend: 'excelHtml5',
-                        text: '<i class="fa fa-file-excel-o"></i> Excel',
-                        titleAttr: 'Excel',
-                        className: 'btn btn-success'
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        text: '<i class="fa fa-file-pdf-o"></i> PDF',
-                        titleAttr: 'PDF',
-                        className: 'btn btn-danger'
-                    }
-                ]
+    <script>
+        document.getElementById('selectedSemester').addEventListener('change', function() {
+            const semester = this.value;
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (semester) {
+                urlParams.set('selectedSemester', semester);
+            } else {
+                urlParams.delete('selectedSemester');
             }
-        },
-        language: { 
-            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json' 
-        }
-    });
-    
-</script>
+
+            window.location.search = urlParams.toString();
+        });
+
+        // Inicializar DataTable
+        $(document).ready(function() {
+            new DataTable('#classes', {
+                paging: false,
+                layout: {
+                    topStart: {
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                text: '<i class="fa fa-file-excel-o"></i> Excel',
+                                titleAttr: 'Excel',
+                                className: 'btn btn-success'
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                                titleAttr: 'PDF',
+                                className: 'btn btn-danger'
+                            }
+                        ]
+                    }
+                },
+                language: { 
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json' 
+                }
+            });
+        });
+    </script>
+</body>
+</html>

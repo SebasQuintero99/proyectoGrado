@@ -1,0 +1,78 @@
+.classes-table {
+    border-collapse: separate;
+    border-spacing: 4px;
+    width: 100%;
+}
+
+.classes-table th, .classes-table td {
+    border: 1px solid #dee2e6;
+    vertical-align: top;
+    padding: 0;
+}
+
+.classes-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    padding: 0.75rem;
+}
+
+.hour-column {
+    font-weight: 500;
+    background-color: #f8f9fa;
+    width: 100px;
+    padding: 0.75rem;
+}
+
+.day-column {
+    min-width: 150px;
+    height: 120px; /* Altura mínima para celdas vacías */
+}
+
+.class-card {
+    background-color: var(--class-color, #e9ecef);
+    border-radius: 8px;
+    padding: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    color: #212529;
+}
+
+.class-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.class-card-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.class-card-body {
+    font-size: 0.85rem;
+}
+
+.class-card-body strong {
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.class-card-body small {
+    display: block;
+    line-height: 1.4;
+    color: #495057;
+}
+
+.empty-cell {
+    background-color: #fdfdff;
+    text-align: center;
+    color: #ced4da;
+    font-size: 0.9rem;
+    padding-top: 45px;
+}
