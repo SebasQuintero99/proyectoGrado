@@ -18,16 +18,18 @@ const verifyToken = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
-        
-        
 
         const { id_rol } = decoded;
         const rutasPermitidas = accessControl.roles[id_rol]?.rutas || [];
-        
-        
-        res.locals.permittedRoutes = rutasPermitidas; // Pasamos las rutas accesibles como permittedRoutes
+        res.locals.permittedRoutes = rutasPermitidas;
 
-        if (rutasPermitidas.includes('*') || rutasPermitidas.includes(req.path)) {
+        // Verificar acceso con rutas exactas o dinámicas
+        const hasAccess = rutasPermitidas.some(route => {
+            const regex = new RegExp(`^${route.replace('*', '.*')}$`);
+            return regex.test(req.path);
+        });
+
+        if (hasAccess) {
             return next();
         }
 

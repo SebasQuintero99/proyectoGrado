@@ -26,6 +26,17 @@
                             value="<%= signatureToEdit ? signatureToEdit.nombre : '' %>" 
                             required>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="grupo" class="form-label">Grupo</label>
+                        <select name="grupo" class="form-select" required>
+                            <option value="">Seleccione un grupo</option>
+                            <% for (let i = 1; i <= 10; i++) { %>
+                                <option value="<%= i %>" <%= signatureToEdit && signatureToEdit.grupo == i ? 'selected' : '' %>><%= i %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="codigo_materia" class="form-label">Código Materia</label>
                         <input 
@@ -46,14 +57,7 @@
                             value="<%= signatureToEdit ? signatureToEdit.numero_curso : '' %>" 
                             required>
                     </div>
-                    <div class="mb-3">
-                        <label for="semestre" class="form-label">Semestre</label>
-                        <select name="semestre" class="form-select" required>
-                            <% for (let i = 1; i <= 10; i++) { %>
-                                <option value="<%= i %>" <%= signatureToEdit && signatureToEdit.semestre == i ? 'selected' : '' %>><%= i %></option>
-                            <% } %>
-                        </select>
-                    </div>
+
                 </div>
 
                 <div class="col-md-6">
@@ -65,6 +69,16 @@
                             <% } %>
                         </select>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="semestre" class="form-label">Semestre</label>
+                        <select name="semestre" class="form-select" required>
+                            <% for (let i = 1; i <= 10; i++) { %>
+                                <option value="<%= i %>" <%= signatureToEdit && signatureToEdit.semestre == i ? 'selected' : '' %>><%= i %></option>
+                            <% } %>
+                        </select>
+                    </div>
+
                     <div class="mb-3">
                         <label for="id_programa" class="form-label">Programa</label>
                         <select name="id_programa" class="form-select" required>
@@ -105,6 +119,7 @@
             <tr>
                 <th>#</th>
                 <th>Nombre</th>
+                <th>Grupo</th>
                 <th>Código Materia</th>
                 <th>#Número de Curso</th>
                 <th>Semestre</th>
@@ -121,6 +136,7 @@
             <tr>
                 <td><%= index + 1 %></td>
                 <td><%= signature.nombre %></td>
+                <td><%= signature.grupo %></td>
                 <td><%= signature.codigo_materia %></td>
                 <td><%= signature.numero_curso %></td>
                 <td><%= signature.semestre %></td>

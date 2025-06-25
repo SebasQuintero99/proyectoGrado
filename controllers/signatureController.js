@@ -40,36 +40,11 @@ exports.listSignatures = async (req, res) => {
     }
 };
 
-// Agregar una nueva asignatura
-// exports.addSignature = async (req, res) => {
-//     const { nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos } = req.body;
-
-//     if (!nombre || !codigo_materia || !semestre || !id_docente || !id_programa || !numero_curso || !numero_creditos) {
-//         return res.redirect('/signatures?error=Todos los campos son requeridos');
-//     }
-
-//     try {
-//         // Validar si ya existe un curso con el mismo numero_curso
-//         const [rows] = await db.query('SELECT * FROM asignatura WHERE numero_curso = ?', [numero_curso]);
-//         if (rows.length > 0) {
-//             return res.redirect('/signatures?error=Los cursos tienen un código único');
-//         }
-
-//         // Insertar el nuevo registro
-//         await db.query('INSERT INTO asignatura (nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-//             [nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos]);
-//         res.redirect('/signatures');
-//     } catch (error) {
-//         console.error('Error al agregar la asignatura:', error);
-//         res.status(500).send('Hubo un error al agregar la asignatura.');
-//     }
-// };
-
 exports.addSignature = async (req, res) => {
-    const { nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa } = req.body;
+    const { nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, grupo } = req.body;
 
     // Verificar que todos los campos obligatorios estén presentes
-    if (!nombre || !codigo_materia || !semestre || !numero_curso || !numero_creditos || !id_docente || !id_programa) {
+    if (!nombre || !codigo_materia || !semestre || !numero_curso || !numero_creditos || !id_docente || !id_programa || !grupo) {
         return res.render('dashboard', {
             content: 'signatures',
             error: 'Todos los campos son obligatorios.',
@@ -94,9 +69,9 @@ exports.addSignature = async (req, res) => {
     try {
         // Insertar la nueva asignatura
         await db.query(`
-            INSERT INTO asignatura (nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, color)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, color]
+            INSERT INTO asignatura (nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, color, grupo)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, color, grupo]
         );
 
         res.redirect('/signatures');
@@ -114,36 +89,10 @@ exports.addSignature = async (req, res) => {
     }
 };
 
-
-// Actualizar una asignatura
-// exports.updateSignature = async (req, res) => {
-//     const { id_asignatura, nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos } = req.body;
-
-//     if (!id_asignatura || !nombre || !codigo_materia || !semestre || !id_docente || !id_programa || !numero_curso || !numero_creditos) {
-//         return res.redirect('/signatures?error=Todos los campos son requeridos');
-//     }
-
-//     try {
-//         // Validar si ya existe un curso con el mismo numero_curso, excluyendo el registro que estamos actualizando
-//         const [rows] = await db.query('SELECT * FROM asignatura WHERE numero_curso = ? AND id_asignatura != ?', [numero_curso, id_asignatura]);
-//         if (rows.length > 0) {
-//             return res.redirect('/signatures?error=Los cursos tienen un código único');
-//         }
-
-//         // Actualizar el registro
-//         await db.query('UPDATE asignatura SET nombre = ?, codigo_materia = ?, semestre = ?, id_docente = ?, id_programa = ?, numero_curso = ?, numero_creditos = ? WHERE id_asignatura = ?', 
-//             [nombre, codigo_materia, semestre, id_docente, id_programa, numero_curso, numero_creditos, id_asignatura]);
-//         res.redirect('/signatures');
-//     } catch (error) {
-//         console.error('Error al actualizar la asignatura:', error);
-//         res.status(500).send('Hubo un error al actualizar la asignatura.');
-//     }
-// };
-
 exports.updateSignature = async (req, res) => {
-    const { id_asignatura, nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa } = req.body;
+    const { id_asignatura, nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, grupo } = req.body;
 
-    if (!id_asignatura || !nombre || !codigo_materia || !semestre || !numero_curso || !numero_creditos || !id_docente || !id_programa) {
+    if (!id_asignatura || !nombre || !codigo_materia || !semestre || !numero_curso || !numero_creditos || !id_docente || !id_programa || !grupo) {
         return res.render('dashboard', {
             content: 'signatures',
             error: 'Todos los campos son obligatorios.',
@@ -171,9 +120,9 @@ exports.updateSignature = async (req, res) => {
         // Actualizar los datos de la asignatura
         await db.query(`
             UPDATE asignatura 
-            SET nombre = ?, codigo_materia = ?, semestre = ?, numero_curso = ?, numero_creditos = ?, id_docente = ?, id_programa = ?, color = ?
+            SET nombre = ?, codigo_materia = ?, semestre = ?, numero_curso = ?, numero_creditos = ?, id_docente = ?, id_programa = ?, color = ?, grupo = ?
             WHERE id_asignatura = ?`,
-            [nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, color, id_asignatura]
+            [nombre, codigo_materia, semestre, numero_curso, numero_creditos, id_docente, id_programa, color, grupo, id_asignatura]
         );
 
         res.redirect('/signatures');
@@ -191,13 +140,10 @@ exports.updateSignature = async (req, res) => {
     }
 };
 
-
 // Eliminar una asignatura
 exports.deleteSignature = async (req, res) => {
     const { id } = req.params;
     
-    
-
     try {
         await db.query('DELETE FROM asignatura WHERE id_asignatura = ?', [id]);
         res.redirect('/signatures');

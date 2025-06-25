@@ -3,6 +3,7 @@
     background-color: #8F141B !important;
 }
 
+
 .navbar-text {
     font-size: 1.25rem;
     color: white;
@@ -14,16 +15,17 @@
 
 /* Estilo para el sidebar */
 .sidebar {
-    height: 100vh;
+    height: 100%;
     background-color: #8F141B;
     color: white;
-    padding-top: 20px;
+    padding-top: 1px;
     position: fixed;
     width: 200px; /* Ancho por defecto */
     transition: width 0.3s;
     overflow: hidden;
     
 }
+
 
 .sidebar.collapsed {
     width: 50px; /* Ancho mínimo cuando está colapsado */
@@ -39,6 +41,7 @@
     color: white;
     font-size: 1.25rem;
     margin-right: 10px;
+    padding-top: 5px;
 }
 
 .sidebar.collapsed .menu-title {
@@ -66,13 +69,25 @@
 .sidebar a {
     color: white;
     text-decoration: none;
-    padding: 10px 15px;
+    padding: 10px 15px; 
     display: block;
     white-space: nowrap; /* Evita que el texto se corte en varias líneas */
     overflow: hidden;
     text-overflow: ellipsis; /* Agrega puntos suspensivos al texto oculto */
     opacity: 1;
     transition: opacity 0.3s; /* Transición suave para ocultar el texto */
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 932px) {
+    .sidebar a {
+        padding: 6px 8px; /* Reduce el padding para ajustar el menú en dispositivos móviles */
+        font-size: 14px; /* Reduce el tamaño de la fuente */
+    }
+
+    .sidebar {
+        padding: 5px; /* Ajusta el padding general del sidebar */
+    }
 }
 
 .sidebar.collapsed a {

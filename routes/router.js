@@ -6,7 +6,7 @@ const forbiddenController = require('../controllers/forbiddenController');
 const loginController = require('../controllers/loginController');
 const registerController = require('../controllers/registerController');
 const logoutController = require('../controllers/logoutController');
-const classController = require('../controllers/classController');
+//const classController = require('../controllers/classController');
 const verifyToken = require('../middlewares/authMiddleware'); // Importar el middleware de autenticación
 const schedulesController = require('../controllers/schedulesController');
 const programController = require('../controllers/programController');
@@ -14,6 +14,20 @@ const laboratoriesController = require('../controllers/laboratoriesController');
 const teacherController = require('../controllers/teacherController');
 const signatureController = require('../controllers/signatureController');
 const homeController = require('../controllers/homeController');
+const adminController = require('../controllers/adminController');
+
+//rutas nuevas de controlador por separado
+
+const listSubjectsController = require('../controllers/listSubjectsController');
+const addClassController = require('../controllers/addClassController');
+const editDeleteClassController = require('../controllers/editDeleteClassController');
+
+// Rutas de Administrador
+
+router.get('/admin', verifyToken, adminController.listUsers);
+router.post('/admin/add', verifyToken, adminController.addUser);
+router.post('/admin/update', verifyToken, adminController.updateUser);
+router.get('/admin/delete/:id', verifyToken, adminController.deleteUser);
 
 
 
@@ -23,14 +37,28 @@ router.get('/home', verifyToken, homeController.renderHome);
 
 
 
+// Rutas para listar
+router.get('/classes', listSubjectsController.listClassesAndSubjects);
+router.get('/classes', listSubjectsController.getLaboratories); // Si necesitas esta ruta específica
+
+// Rutas para agregar
+router.post('/classes/add', addClassController.addClass);
+
+// Rutas para editar y borrar
+router.post('/classes/update', editDeleteClassController.updateClass);
+router.delete('/classes/:id', editDeleteClassController.deleteClass);
+
 // // Listar clases
  // router.get('/classes',verifyToken, classController.getLaboratories);
 
 // Rutas de Clases
-router.get('/classes', verifyToken, classController.listClasses);
-router.post('/classes/add', verifyToken, classController.addClass);
-router.post('/classes/update', verifyToken, classController.updateClass);
-router.get('/classes/delete/:id', verifyToken, classController.deleteClass);
+// router.get('/classes', verifyToken, classController.listClasses);
+// router.post('/classes/add', verifyToken, classController.addClass);
+// router.post('/classes/update', verifyToken, classController.updateClass);
+// router.get('/classes/delete/:id', verifyToken, classController.deleteClass);
+
+
+
 
 // Ruta para listar programas (y cargar el formulario de edición si corresponde)
 router.get('/programs', verifyToken, programController.listPrograms);

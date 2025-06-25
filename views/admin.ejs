@@ -1,0 +1,127 @@
+<div>
+    <h1>Gestión de Usuarios</h1>
+
+    <% if (errorMessage) { %>
+        <div class="alert alert-danger" role="alert">
+            <%= errorMessage %>
+        </div>
+    <% } %>
+
+    <% if (permittedRoutes.includes('/admin/add')) { %>
+        <!-- Formulario de Agregar/Editar Usuario -->
+        <form action="<%= userToEdit ? '/admin/update' : '/admin/add' %>" method="POST" class="mb-4">
+            <% if (userToEdit) { %>
+                <input type="hidden" name="id_usuario" value="<%= userToEdit.id_usuario %>">
+            <% } %>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" placeholder="Nombre del usuario" value="<%= userToEdit ? userToEdit.nombre : '' %>" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <input type="email" name="email" class="form-control" placeholder="Correo electrónico" value="<%= userToEdit ? userToEdit.email : '' %>" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="contrasena" class="form-label">Contraseña</label>
+                    <input type="password" name="contraseña" class="form-control" placeholder="Contraseña">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="confirmarContrasena" class="form-label">Confirmar Contraseña</label>
+                    <input type="password" name="confirmarContraseña" class="form-control" placeholder="Confirmar contraseña">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_rol" class="form-label">Rol</label>
+                    <select name="id_rol" class="form-select" required>
+                        <option value="">Seleccione un rol</option>
+                        <% roles.forEach(rol => { %>
+                            <option value="<%= rol.id_rol %>" <%= userToEdit && userToEdit.id_rol === rol.id_rol ? 'selected' : '' %>>
+                                <%= rol.nombre %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn <%= userToEdit ? 'btn-warning' : 'btn-success' %>">
+                        <%= userToEdit ? 'Actualizar' : 'Agregar' %>
+                    </button>
+
+                    <% if (userToEdit) { %>
+                        <a href="/admin" class="btn btn-secondary mt-2">Cancelar</a>
+                    <% } %>
+                </div>
+            </div>
+        </form>
+    <% } %>
+
+    <!-- Tabla de Usuarios -->
+    <table id="users" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <% if (permittedRoutes.includes('/admin/update') || permittedRoutes.includes('/admin/delete')) { %>
+                    <th>Acciones</th>
+                <% } %>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach((user, index) => { %>
+                <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= user.nombre %></td>
+                    <td><%= user.email %></td>
+                    <td><%= user.rol_nombre %></td>
+                    <% if (permittedRoutes.includes('/admin/update') || permittedRoutes.includes('/admin/delete')) { %>
+                        <td>
+                            <% if (permittedRoutes.includes('/admin/update')) { %>
+                                <a href="/admin?editId=<%= user.id_usuario %>" class="btn btn-primary btn-sm">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                            <% } %>
+                            <% if (permittedRoutes.includes('/admin/delete')) { %>
+                                <button class="btn btn-danger btn-sm delete-btn" data-id="<%= user.id_usuario %>" data-entity="users">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            <% } %>
+                        </td>
+                    <% } %>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+<script>
+    new DataTable('#users', {
+        layout: {
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="fa fa-file-excel-o"></i> Excel',
+                        titleAttr: 'Excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                        titleAttr: 'PDF'
+                    }
+                ]
+            }
+        }
+    });
+</script>

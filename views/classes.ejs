@@ -7,17 +7,32 @@
     </div>
 <% } %>
 
-<!-- Filtro y campo para guardar laboratorio -->
+<!-- Filtros (Laboratorio y Semestre) -->
 <form method="GET" action="/classes" id="filterForm" class="mb-4">
-    <label for="id_laboratorio" class="form-label">Laboratorio</label>
-    <select name="selectedLaboratory" id="id_laboratorio" class="form-select w-50" onchange="document.getElementById('filterForm').submit()" required>
-        <option value="">Seleccione un laboratorio</option>
-        <% laboratories.forEach(lab => { %>
-            <option value="<%= lab.id_laboratorio %>" <%= selectedLaboratory == lab.id_laboratorio ? 'selected' : '' %>>
-                <%= lab.nombre %>
-            </option>
-        <% }) %>
-    </select>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="id_laboratorio" class="form-label">Laboratorio</label>
+            <select name="selectedLaboratory" id="id_laboratorio" class="form-select w-100" onchange="document.getElementById('filterForm').submit()" required>
+                <option value="">Seleccione un laboratorio</option>
+                <% laboratories.forEach(lab => { %>
+                    <option value="<%= lab.id_laboratorio %>" <%= selectedLaboratory == lab.id_laboratorio ? 'selected' : '' %>>
+                        <%= lab.nombre %>
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+
+            <!-- Selector de Semestres -->
+            <div class="col-md-6 mb-3">
+                <label for="selectedSemester" class="form-label">Semestre</label>
+                <select name="selectedSemester" id="selectedSemester" class="form-select w-100">
+                    <option value="">Todos los semestres</option>
+                    <% semesters.forEach(semestre => { %>
+                        <option value="<%= semestre %>" <%= selectedSemester == semestre ? 'selected' : '' %>><%= semestre %></option>
+                    <% }) %>
+                </select>
+            </div>
+    </div>
 </form>
 
 <!-- Formulario de Agregar/Editar Clase -->
@@ -35,8 +50,8 @@
                     <option value="">Seleccione una asignatura</option>
                     <% subjects.forEach(subject => { %>
                         <option value="<%= subject.id_asignatura %>" 
-                            <%= classToEdit && classToEdit.id_asignatura === subject.id_asignatura ? 'selected' : '' %>>
-                            <%= subject.nombre %> - <%= subject.docente_nombre || 'Sin profesor' %> - <%= subject.numero_curso %>
+                                <%= classToEdit && classToEdit.id_asignatura === subject.id_asignatura ? 'selected' : '' %>>
+                            <%= subject.nombre %>
                         </option>
                     <% }) %>
                 </select>
@@ -88,7 +103,7 @@
 <% } %>
 
 <!-- Tabla de Clases -->
-<table class="table table-bordered text-center classes-table">
+<table id="classes" class="table table-bordered text-center classes-table">
     <thead>
         <tr>
             <th class="hour-column">Horas</th>
@@ -134,6 +149,8 @@
                             <div>
                                 <strong><%= clase.asignatura_nombre %></strong><br>
                                 <small><strong>N° curso:</strong> <%= clase.numero_curso %></small><br>
+                                <small><strong>Grupo:</strong> <%= clase.grupo %></small><br>
+                                <small><strong>Semestre:</strong> <%= clase.semestre %></small><br>
                                 <small><strong>Docente: </strong><%= clase.docente_nombre || 'Sin profesor' %></small><br>
                                 <small><strong>Horario: </strong><%= clase.hora_inicio %> - <%= clase.hora_fin %></small>
                             </div>
@@ -146,3 +163,42 @@
         <% }); %>
     </tbody>
 </table>
+
+<script>
+    document.getElementById('selectedSemester').addEventListener('change', function() {
+        const semester = this.value;
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (semester) {
+            urlParams.set('selectedSemester', semester); // Actualiza el parámetro en la URL
+        } else {
+            urlParams.delete('selectedSemester'); // Si no hay semestre seleccionado, lo elimina
+        }
+
+        window.location.search = urlParams.toString(); // Recarga la página con la nueva URL
+    });
+</script>
+
+
+
+<script>
+    new DataTable('#classes', {
+        paging: false,
+        layout: {
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="fa fa-file-excel-o"></i> Excel',
+                        titleAttr: 'Excel'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                        titleAttr: 'PDF'
+                    }
+                ]
+            }
+        }
+    });
+</script>

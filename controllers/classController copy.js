@@ -27,46 +27,37 @@ exports.listClasses = async (req, res) => {
         const error = req.session.error; // Obtener el mensaje de error desde la sesión
         delete req.session.error; // Limpiar el mensaje después de usarlo
 
-        const { selectedLaboratory, selectedSemester } = req.query; // Obtener laboratorio y semestre seleccionados
+        const { selectedLaboratory } = req.query; // Obtener el ID del laboratorio seleccionado
 
         // Consultar laboratorios
         const [laboratories] = await db.query('SELECT id_laboratorio, nombre FROM laboratorio');
 
-        // Consultar los semestres disponibles (valores únicos de semestre en asignatura)
-        const [semesters] = await db.query('SELECT DISTINCT semestre FROM asignatura ORDER BY semestre');
-
-        // Consultar clases filtradas solo por laboratorio (sin filtro de semestre)
+        // Consultar clases filtradas por laboratorio
         let classes = [];
         if (selectedLaboratory) {
             [classes] = await db.query(`
                 SELECT clase.id_clase, clase.dia_semana, clase.hora_inicio, clase.hora_fin,
                        asignatura.nombre AS asignatura_nombre, asignatura.numero_curso, 
-                       asignatura.color AS asignatura_color, asignatura.grupo, asignatura.semestre,
+                       asignatura.color AS asignatura_color, 
                        laboratorio.nombre AS laboratorio_nombre, 
                        docente.nombre AS docente_nombre
                 FROM clase
-                INNER JOIN asignatura ON clase.id_asignatura = asignatura.id_asignatura
-                INNER JOIN laboratorio ON clase.id_laboratorio = laboratorio.id_laboratorio
+                JOIN asignatura ON clase.id_asignatura = asignatura.id_asignatura
+                JOIN laboratorio ON clase.id_laboratorio = laboratorio.id_laboratorio
                 LEFT JOIN docente ON asignatura.id_docente = docente.id_docente
                 WHERE clase.id_laboratorio = ?
             `, [selectedLaboratory]);
         }
 
-        // Obtener las asignaturas disponibles (sin asignar) y filtradas por semestre
-        let subjectsQuery = `
-            SELECT asignatura.id_asignatura, asignatura.nombre, asignatura.semestre
+        // Obtener las asignaturas disponibles (sin asignar)
+        const [subjects] = await db.query(`
+            SELECT asignatura.id_asignatura, asignatura.nombre, asignatura.numero_curso, 
+                   docente.nombre AS docente_nombre
             FROM asignatura
             LEFT JOIN clase ON asignatura.id_asignatura = clase.id_asignatura
+            LEFT JOIN docente ON asignatura.id_docente = docente.id_docente
             WHERE clase.id_asignatura IS NULL
-        `;
-        let subjectsParams = [];
-
-        if (selectedSemester) {
-            subjectsQuery += ' AND asignatura.semestre = ?';
-            subjectsParams.push(selectedSemester);
-        }
-
-        const [subjects] = await db.query(subjectsQuery, subjectsParams);
+        `);
 
         const { editId } = req.query;
         let classToEdit = null;
@@ -77,16 +68,15 @@ exports.listClasses = async (req, res) => {
 
             if (classToEdit) {
                 const [currentSubject] = await db.query(`
-                    SELECT asignatura.id_asignatura, asignatura.nombre, asignatura.semestre
+                    SELECT asignatura.id_asignatura, asignatura.nombre, asignatura.numero_curso, 
+                           docente.nombre AS docente_nombre
                     FROM asignatura
+                    LEFT JOIN docente ON asignatura.id_docente = docente.id_docente
                     WHERE asignatura.id_asignatura = ?
                 `, [classToEdit.id_asignatura]);
 
                 if (currentSubject.length > 0) {
-                    // Solo agregar la asignatura actual si coincide con el semestre seleccionado o si no hay semestre seleccionado
-                    if (!selectedSemester || currentSubject[0].semestre == selectedSemester) {
-                        subjects.push(currentSubject[0]);
-                    }
+                    subjects.push(currentSubject[0]);
                 }
             }
         }
@@ -96,8 +86,6 @@ exports.listClasses = async (req, res) => {
             classes,
             laboratories,
             selectedLaboratory: selectedLaboratory || '', // Laboratorio seleccionado
-            selectedSemester: selectedSemester || '', // Semestre seleccionado
-            semesters: semesters.map(s => s.semestre), // Lista de semestres disponibles
             subjects,
             classToEdit,
             error,
@@ -111,8 +99,6 @@ exports.listClasses = async (req, res) => {
             classes: [],
             laboratories: [],
             selectedLaboratory: null,
-            selectedSemester: null,
-            semesters: [],
             subjects: [],
             classToEdit: null,
             error: 'No se pudieron cargar las clases.',
@@ -120,6 +106,7 @@ exports.listClasses = async (req, res) => {
         });
     }
 };
+
 
 exports.addClass = async (req, res) => {
     const { id_asignatura, id_laboratorio, dia_semana, hora_inicio, hora_fin } = req.body;
@@ -150,8 +137,8 @@ exports.addClass = async (req, res) => {
         const [conflicts] = await db.query(`
             SELECT clase.id_clase, asignatura.nombre AS asignatura_nombre, asignatura.semestre, clase.hora_inicio, clase.hora_fin, laboratorio.nombre AS laboratorio_nombre
             FROM clase
-            INNER JOIN asignatura ON clase.id_asignatura = asignatura.id_asignatura
-            INNER JOIN laboratorio ON clase.id_laboratorio = laboratorio.id_laboratorio
+            JOIN asignatura ON clase.id_asignatura = asignatura.id_asignatura
+            JOIN laboratorio ON clase.id_laboratorio = laboratorio.id_laboratorio
             WHERE clase.dia_semana = ?
               AND (
                   -- Caso 1: Diferente laboratorio, mismo horario, mismo semestre, diferente grupo
@@ -169,7 +156,7 @@ exports.addClass = async (req, res) => {
             return res.redirect('/classes');
         }
 
-        // Insertar la nueva clase
+        // Insertar la nueva clase si no hay conflictos
         await db.query(`
             INSERT INTO clase (id_asignatura, id_laboratorio, dia_semana, hora_inicio, hora_fin)
             VALUES (?, ?, ?, ?, ?)
@@ -182,6 +169,8 @@ exports.addClass = async (req, res) => {
         res.redirect('/classes');
     }
 };
+
+
 
 exports.updateClass = async (req, res) => {
     const { id_clase, id_asignatura, id_laboratorio, dia_semana, hora_inicio, hora_fin } = req.body;
@@ -212,8 +201,8 @@ exports.updateClass = async (req, res) => {
         const [conflicts] = await db.query(`
             SELECT clase.id_clase, asignatura.nombre AS asignatura_nombre, asignatura.semestre, clase.hora_inicio, clase.hora_fin, laboratorio.nombre AS laboratorio_nombre
             FROM clase
-            INNER JOIN asignatura ON clase.id_asignatura = asignatura.id_asignatura
-            INNER JOIN laboratorio ON clase.id_laboratorio = laboratorio.id_laboratorio
+            JOIN asignatura ON clase.id_asignatura = asignatura.id_asignatura
+            JOIN laboratorio ON clase.id_laboratorio = laboratorio.id_laboratorio
             WHERE clase.dia_semana = ?
               AND clase.id_clase != ?
               AND (
@@ -233,7 +222,7 @@ exports.updateClass = async (req, res) => {
             return res.redirect('/classes');
         }
 
-        // Actualizar la clase
+        // Actualizar la clase si no hay conflictos
         await db.query(`
             UPDATE clase 
             SET id_asignatura = ?, id_laboratorio = ?, dia_semana = ?, hora_inicio = ?, hora_fin = ?
@@ -247,6 +236,7 @@ exports.updateClass = async (req, res) => {
         res.redirect('/classes');
     }
 };
+
 
 exports.deleteClass = async (req, res) => {
     const { id } = req.params;
