@@ -27,7 +27,10 @@ const editDeleteClassController = require('../controllers/editDeleteClassControl
 router.get('/admin', verifyToken, adminController.listUsers);
 router.post('/admin/add', verifyToken, adminController.addUser);
 router.post('/admin/update', verifyToken, adminController.updateUser);
-router.get('/admin/delete/:id', verifyToken, adminController.deleteUser);
+router.delete('/admin/delete/:id', verifyToken, adminController.deleteUser);
+
+// Ruta de API para obtener un usuario por ID
+router.get('/api/admin/users/:id', verifyToken, adminController.getUserById);
 
 
 
@@ -71,7 +74,11 @@ router.post('/programs/add', verifyToken, programController.addProgram);
 router.post('/programs/update', verifyToken, programController.updateProgram);
 
 // Ruta para eliminar un programa
-router.get('/programs/delete/:id', verifyToken, programController.deleteProgram);
+router.delete('/programs/delete/:id', verifyToken, programController.deleteProgram);
+
+// Ruta de API para obtener un programa por ID
+router.get('/api/programs/:id', verifyToken, programController.getProgramById);
+
 
 // --- Rutas de Horarios --->
 

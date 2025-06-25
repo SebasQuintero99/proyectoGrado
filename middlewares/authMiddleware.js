@@ -8,10 +8,21 @@ const verifyToken = (req, res, next) => {
         return next();
     }
 
-    const token = req.cookies?.token || req.headers['authorization'];
+    let token = req.cookies?.token;
+    const authHeader = req.headers['authorization'];
+
+    if (!token && authHeader) {
+        const parts = authHeader.split(' ');
+        if (parts.length === 2 && parts[0] === 'Bearer') {
+            token = parts[1];
+        }
+    }
 
     if (!token) {
-        console.log('Token no proporcionado, redirigiendo al login');
+        console.log('Token no proporcionado.');
+        if (req.accepts('json')) {
+            return res.status(401).json({ success: false, message: 'Acceso no autorizado. Se requiere token.' });
+        }
         return res.redirect('/login?error=unauthorized');
     }
 
@@ -23,7 +34,6 @@ const verifyToken = (req, res, next) => {
         const rutasPermitidas = accessControl.roles[id_rol]?.rutas || [];
         res.locals.permittedRoutes = rutasPermitidas;
 
-        // Verificar acceso con rutas exactas o dinámicas
         const hasAccess = rutasPermitidas.some(route => {
             const regex = new RegExp(`^${route.replace('*', '.*')}$`);
             return regex.test(req.path);
@@ -34,12 +44,19 @@ const verifyToken = (req, res, next) => {
         }
 
         console.log(`Acceso denegado a la ruta ${req.path} para el rol ${id_rol}`);
+        if (req.accepts('json')) {
+            return res.status(403).json({ success: false, message: 'Acceso prohibido a este recurso.' });
+        }
         return res.status(403).render('dashboard', {
             user: decoded,
             content: 'accessForbidden',
         });
+
     } catch (err) {
         console.error('Error al verificar el token:', err.message);
+        if (req.accepts('json')) {
+            return res.status(401).json({ success: false, message: 'Token inválido o expirado.' });
+        }
         return res.redirect('/login?error=unauthorized');
     }
 };

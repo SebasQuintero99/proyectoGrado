@@ -1,101 +1,81 @@
+const db = require('../config/db');
 
-const db = require('../config/db'); // Conexión a la base de datos
-
-// Listar programas con filtro (si aplica)
+// Listar todos los programas
 exports.listPrograms = async (req, res) => {
-    const { filter } = req.query; // Tomamos el filtro de la query
-
     try {
-        let query = `SELECT * FROM programa`; // Consulta base sin limitación ni paginación
-        let queryParams = [];
-
-        // Si existe un filtro, aplicamos el LIKE
-        if (filter) {
-            query = `SELECT * FROM programa WHERE nombre_programa LIKE ?`;
-            queryParams = [`%${filter}%`];
-        }
-
-        // Obtener los programas (sin límite ni offset)
-        const [programs] = await db.query(query, queryParams);
-        
-
-        // Si es una solicitud AJAX (para filtrar), devolver solo los datos
-        if (req.xhr) {
-            return res.json(programs); // Retornar los programas filtrados
-        }
-
-        // Obtener el programa a editar si es necesario
-        const { editId } = req.query;
-        let programToEdit = null;
-        if (editId) {
-            const [rows] = await db.query('SELECT * FROM programa WHERE id_programa = ?', [editId]);
-            programToEdit = rows.length > 0 ? rows[0] : null;
-        }
-
-        // Renderizamos la vista con los datos
+        const [programs] = await db.query('SELECT * FROM programa');
         res.render('dashboard', {
             user: req.user,
             content: 'programs',
-            programs,  // Pasamos todos los programas
-            programToEdit, // Pasamos el programa a editar
-            
+            programs,
         });
-        // console.log('Usuario autenticado:', req.user);
-        
     } catch (error) {
         console.error('Error al listar programas:', error);
         res.status(500).send('Hubo un error al listar los programas.');
     }
 };
 
+// Obtener un programa por ID para la API
+exports.getProgramById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [rows] = await db.query('SELECT * FROM programa WHERE id_programa = ?', [id]);
+        if (rows.length > 0) {
+            res.json(rows[0]);
+        } else {
+            res.status(404).json({ error: 'Programa no encontrado' });
+        }
+    } catch (error) {
+        console.error(`Error al obtener el programa por ID: ${id}`, error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+
 // Agregar un nuevo programa
 exports.addProgram = async (req, res) => {
     const { nombre_programa } = req.body;
-
     if (!nombre_programa) {
-        return res.status(400).send('El nombre del programa es requerido.');
+        return res.status(400).json({ success: false, message: 'El nombre del programa es requerido.' });
     }
-
     try {
-        await db.query('INSERT INTO programa (nombre_programa) VALUES (?)', [nombre_programa]);
-        setTimeout(() => {
-            res.redirect('/programs');
-        }, 500);
+        const [result] = await db.query('INSERT INTO programa (nombre_programa) VALUES (?)', [nombre_programa]);
+        res.json({ success: true, message: 'Programa agregado correctamente.', programId: result.insertId });
     } catch (error) {
         console.error('Error al agregar el programa:', error);
-        res.status(500).send('Hubo un error al agregar el programa.');
+        res.status(500).json({ success: false, message: 'Hubo un error al agregar el programa.' });
     }
 };
 
 // Actualizar un programa
 exports.updateProgram = async (req, res) => {
     const { id_programa, nombre_programa } = req.body;
-
     if (!id_programa || !nombre_programa) {
-        return res.status(400).send('Todos los campos son requeridos.');
+        return res.status(400).json({ success: false, message: 'Todos los campos son requeridos.' });
     }
-
     try {
         await db.query('UPDATE programa SET nombre_programa = ? WHERE id_programa = ?', [nombre_programa, id_programa]);
-        setTimeout(() => {
-            res.redirect('/programs');
-        }, 500);
+        res.json({ success: true, message: 'Programa actualizado correctamente.' });
     } catch (error) {
         console.error('Error al actualizar el programa:', error);
-        res.status(500).send('Hubo un error al actualizar el programa.');
+        res.status(500).json({ success: false, message: 'Hubo un error al actualizar el programa.' });
     }
 };
 
 // Eliminar un programa
 exports.deleteProgram = async (req, res) => {
     const { id } = req.params;
-
     try {
-        await db.query('DELETE FROM programa WHERE id_programa = ?', [id]);
-        res.redirect('/programs');
+        const [result] = await db.query('DELETE FROM programa WHERE id_programa = ?', [id]);
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Programa eliminado correctamente.' });
+        } else {
+            res.status(404).json({ success: false, message: 'Programa no encontrado.' });
+        }
     } catch (error) {
         console.error('Error al eliminar el programa:', error);
-        res.status(500).send('Hubo un error al eliminar el programa.');
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            return res.status(400).json({ success: false, message: 'No se puede eliminar el programa porque tiene asignaturas asociadas. Por favor, elimine las asignaturas primero.' });
+        }
+        res.status(500).json({ success: false, message: 'Error interno del servidor.' });
     }
 };
-
