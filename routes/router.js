@@ -119,6 +119,9 @@ router.post('/signatures/update', verifyToken, signatureController.updateSignatu
 // Ruta para eliminar asignaturas
 router.get('/signatures/delete/:id', verifyToken, signatureController.deleteSignature);
 
+// Ruta de API para obtener una asignatura por ID (para el modal de edición)
+router.get('/api/signatures/:id', verifyToken, signatureController.getSignatureById);
+
 
 
 // --- Rutas de Docentes --->

@@ -152,3 +152,19 @@ exports.deleteSignature = async (req, res) => {
         res.status(500).send('Hubo un error al eliminar la asignatura.');
     }
 };
+
+// Obtener una asignatura por ID para el modal de edición (API)
+exports.getSignatureById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [rows] = await db.query('SELECT * FROM asignatura WHERE id_asignatura = ?', [id]);
+        if (rows.length > 0) {
+            res.json(rows[0]); // Enviar datos como JSON
+        } else {
+            res.status(404).json({ error: 'Asignatura no encontrada' });
+        }
+    } catch (error) {
+        console.error('Error al obtener la asignatura por ID:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};

@@ -1,7 +1,7 @@
 // Manejar la confirmación de registros agregados exitosamente
 document.addEventListener('DOMContentLoaded', () => {
     // Detectar clic en botones con clase 'btn-success'
-    $(document).on('click', '.btn-success', function(e) {
+    $(document).on('click', '.btn-success:not([data-bs-toggle="modal"])', function(e) {
         // Mostrar alerta de éxito usando SweetAlert2
         Swal.fire({
             position: "center",
@@ -9,13 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
             text: 'El registro se ha agregado satisfactoriamente.',
             icon: 'success',
             showConfirmButton: false, // Ocultar el botón de confirmación
-            timer: 4000, // Duración total de 2 segundos
+            timer: 5000, // Duración total de 2 segundos
             timerProgressBar: true, // Mostrar barra de progreso
             willClose: () => {
                 // Esperar un poco después de que la alerta desaparezca
                 setTimeout(() => {
                     console.log('Alerta cerrada después de 2 segundos');
-                }, 4000);
+                }, 2000);
             }
         });
     });
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Manejar la modificación de registros agregados exitosamente
 document.addEventListener('DOMContentLoaded', () => {
     // Detectar clic en botones con clase 'btn-success'
-    $(document).on('click', '.btn-warning', function(e) {
+    $(document).on('click', '.btn-warning:not([data-bs-toggle="modal"])', function(e) {
         // Mostrar alerta de éxito usando SweetAlert2
         Swal.fire({
             position: "center",
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             text: 'El registro se ha mofificado satisfactoriamente.',
             icon: 'success',
             showConfirmButton: false, // Ocultar el botón de confirmación
-            timer: 4000, // Duración total de 2 segundos
+            timer: 2000, // Duración total de 2 segundos
             timerProgressBar: true, // Mostrar barra de progreso
             willClose: () => {
                 // Esperar un poco después de que la alerta desaparezca
