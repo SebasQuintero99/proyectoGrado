@@ -8,6 +8,10 @@ const verifyToken = (req, res, next) => {
         return next();
     }
 
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     let token = req.cookies?.token;
     const authHeader = req.headers['authorization'];
 
@@ -20,10 +24,7 @@ const verifyToken = (req, res, next) => {
 
     if (!token) {
         console.log('Token no proporcionado.');
-        if (req.accepts('json')) {
-            return res.status(401).json({ success: false, message: 'Acceso no autorizado. Se requiere token.' });
-        }
-        return res.redirect('/login?error=unauthorized');
+        return res.redirect('/login');
     }
 
     try {

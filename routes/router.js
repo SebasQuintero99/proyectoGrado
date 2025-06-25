@@ -1,5 +1,10 @@
 const express = require('express');
 const router = express.Router();
+
+// Redirección de la raíz a la página de login
+router.get('/', (req, res) => {
+    res.redirect('/login');
+});
 // const db = require('../config/db'); // Ruta hacia tu configuración de la base de datos
 // const paginationMiddleware = require('../middlewares/paginationMiddleware');
 const forbiddenController = require('../controllers/forbiddenController');

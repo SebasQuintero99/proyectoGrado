@@ -156,7 +156,7 @@
                             </div>
                         </td>
                     <% } else { %>
-                        <td class="day-column">No hay clase</td>
+                        <td class="day-column">Sin Asignar</td>
                     <% } 
                 }); %>
             </tr>
@@ -190,15 +190,21 @@
                     {
                         extend: 'excelHtml5',
                         text: '<i class="fa fa-file-excel-o"></i> Excel',
-                        titleAttr: 'Excel'
+                        titleAttr: 'Excel',
+                        className: 'btn btn-success'
                     },
                     {
                         extend: 'pdfHtml5',
                         text: '<i class="fa fa-file-pdf-o"></i> PDF',
-                        titleAttr: 'PDF'
+                        titleAttr: 'PDF',
+                        className: 'btn btn-danger'
                     }
                 ]
             }
+        },
+        language: { 
+            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json' 
         }
     });
+    
 </script>
