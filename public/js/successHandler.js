@@ -1,7 +1,7 @@
 // Manejar la confirmación de registros agregados exitosamente
 document.addEventListener('DOMContentLoaded', () => {
-    // Detectar clic en botones con clase 'btn-success'
-    $(document).on('click', '.btn-success:not([data-bs-toggle="modal"])', function(e) {
+    // Detectar clic en botones de formulario, excluyendo los de modales y DataTables
+    $(document).on('click', 'form .btn-success:not([data-bs-toggle="modal"]):not(.dt-button)', function(e) {
         // Mostrar alerta de éxito usando SweetAlert2
         Swal.fire({
             position: "center",
@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Manejar la modificación de registros agregados exitosamente
 document.addEventListener('DOMContentLoaded', () => {
-    // Detectar clic en botones con clase 'btn-success'
-    $(document).on('click', '.btn-warning:not([data-bs-toggle="modal"])', function(e) {
+    // Detectar clic en botones de formulario, excluyendo los de modales y DataTables
+    $(document).on('click', 'form .btn-warning:not([data-bs-toggle="modal"]):not(.dt-button)', function(e) {
         // Mostrar alerta de éxito usando SweetAlert2
         Swal.fire({
             position: "center",
