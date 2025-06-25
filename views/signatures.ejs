@@ -1,159 +1,165 @@
-<div>
-    <h1>Gestión de Asignaturas</h1>
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">
+            <i class="fas fa-book-open me-2"></i>Gestión de Asignaturas
+        </h4>
+        <% if (permittedRoutes.includes('/signatures/add')) { %>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#signatureModal" id="addSignatureBtn">
+                <i class="fas fa-plus me-1"></i> Agregar
+            </button>
+        <% } %>
+    </div>
+    <div class="card-body">
+        <!-- Mensaje de error -->
+        <% if (error) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= error %>
+            </div>
+        <% } %>
 
-    <!-- Mensaje de error -->
-    <% if (error) { %>
-        <div class="alert alert-danger" role="alert">
-            <%= error %>
+        <!-- Tabla de Asignaturas -->
+        <div class="table-responsive">
+            <table id="signatures" class="table table-hover table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th class="text-center">Nombre</th>
+                        <th class="text-center">Grupo</th>
+                        <th class="text-center">Código Materia</th>
+                        <th class="text-center">#Número de Curso</th>
+                        <th class="text-center">Semestre</th>
+                        <th class="text-center">Docente</th>
+                        <th class="text-center">Programa</th>
+                        <th class="text-center">Número de Créditos</th>
+                        <% if (permittedRoutes.includes('/signatures/update') || permittedRoutes.includes('/signatures/delete')) { %>
+                            <th class="text-center">Acciones</th>
+                        <% } %>
+                    </tr>
+                </thead>
+                <tbody id="signatures-table-body">
+                    <% signatures.forEach((signature, index) => { %>
+                    <tr>
+                        <td class="text-center"><%= index + 1 %></td>
+                        <td class="text-center"><%= signature.nombre %></td>
+                        <td class="text-center"><%= signature.grupo %></td>
+                        <td class="text-center"><%= signature.codigo_materia %></td>
+                        <td class="text-center"><%= signature.numero_curso %></td>
+                        <td class="text-center"><%= signature.semestre %></td>
+                        <td class="text-center"><%= signature.docente_nombre || 'No asignado' %></td>
+                        <td class="text-center"><%= signature.nombre_programa || 'No asignado' %></td>
+                        <td class="text-center"><%= signature.numero_creditos %></td>
+                        <% if (permittedRoutes.includes('/signatures/update') || permittedRoutes.includes('/signatures/delete')) { %>
+                            <td class="text-center">
+                                <% if (permittedRoutes.includes('/signatures/update')) { %>
+                                    <button type="button" class="btn btn-primary btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#signatureModal" data-id="<%= signature.id_asignatura %>">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                <% } %>
+                                <% if (permittedRoutes.includes('/signatures/delete')) { %>
+                                    <button 
+                                        class="btn btn-danger btn-sm delete-btn" 
+                                        data-id="<%= signature.id_asignatura %>" 
+                                        data-entity="signatures">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                <% } %>
+                            </td>
+                        <% } %>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
         </div>
-    <% } %>
+    </div>
+</div>
 
-    <!-- Botón para abrir el modal de agregar asignatura -->
-    <% if (permittedRoutes.includes('/signatures/add')) { %>
-        <button type="button" class="btn btn-success mb-4" data-bs-toggle="modal" data-bs-target="#signatureModal" id="addSignatureBtn">
-            <i class="fas fa-plus"></i> Agregar Asignatura
-        </button>
-    <% } %>
-
-    <!-- Modal para Agregar/Editar Asignatura -->
-    <div class="modal fade" id="signatureModal" tabindex="-1" aria-labelledby="signatureModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="signatureModalLabel">Agregar Asignatura</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="signatureForm" method="POST">
-                        <input type="hidden" name="id_asignatura" id="id_asignatura">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="nombre" class="form-label">Nombre</label>
-                                    <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Nombre de la asignatura" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="grupo" class="form-label">Grupo</label>
-                                    <select name="grupo" id="grupo" class="form-select" required>
-                                        <option value="">Seleccione un grupo</option>
-                                        <% for (let i = 1; i <= 10; i++) { %>
-                                            <option value="<%= i %>"><%= i %></option>
-                                        <% } %>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="codigo_materia" class="form-label">Código Materia</label>
-                                    <input type="text" name="codigo_materia" id="codigo_materia" class="form-control" placeholder="Código de la materia" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="numero_curso" class="form-label">Número de Curso</label>
-                                    <input type="number" name="numero_curso" id="numero_curso" class="form-control" placeholder="Número de curso" required>
-                                </div>
+<!-- Modal para Agregar/Editar Asignatura -->
+<div class="modal fade" id="signatureModal" tabindex="-1" aria-labelledby="signatureModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signatureModalLabel">Agregar Asignatura</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="signatureForm" method="POST">
+                    <input type="hidden" name="id_asignatura" id="id_asignatura">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Nombre de la asignatura" required>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="numero_creditos" class="form-label">Número de Créditos</label>
-                                    <select name="numero_creditos" id="numero_creditos" class="form-select" required>
-                                        <option value="">Seleccione los créditos</option>
-                                        <% for (let i = 1; i <= 4; i++) { %>
-                                            <option value="<%= i %>"><%= i %></option>
-                                        <% } %>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="semestre" class="form-label">Semestre</label>
-                                    <select name="semestre" id="semestre" class="form-select" required>
-                                        <option value="">Seleccione el semestre</option>
-                                        <% for (let i = 1; i <= 10; i++) { %>
-                                            <option value="<%= i %>"><%= i %></option>
-                                        <% } %>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="id_programa" class="form-label">Programa</label>
-                                    <select name="id_programa" id="id_programa" class="form-select" required>
-                                        <option value="">Seleccione un programa</option>
-                                        <% programs.forEach(program => { %>
-                                            <option value="<%= program.id_programa %>"><%= program.nombre_programa %></option>
-                                        <% }) %>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="id_docente" class="form-label">Docente</label>
-                                    <select name="id_docente" id="id_docente" class="form-select" required>
-                                        <option value="">Seleccione un docente</option>
-                                        <% teachers.forEach(teacher => { %>
-                                            <option value="<%= teacher.id_docente %>"><%= teacher.nombre %></option>
-                                        <% }) %>
-                                    </select>
-                                </div>
+                            <div class="mb-3">
+                                <label for="grupo" class="form-label">Grupo</label>
+                                <select name="grupo" id="grupo" class="form-select" required>
+                                    <option value="">Seleccione un grupo</option>
+                                    <% for (let i = 1; i <= 10; i++) { %>
+                                        <option value="<%= i %>"><%= i %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="codigo_materia" class="form-label">Código Materia</label>
+                                <input type="text" name="codigo_materia" id="codigo_materia" class="form-control" placeholder="Código de la materia" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="numero_curso" class="form-label">Número de Curso</label>
+                                <input type="number" name="numero_curso" id="numero_curso" class="form-control" placeholder="Número de curso" required>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary" id="submitButton">Guardar Cambios</button>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="numero_creditos" class="form-label">Número de Créditos</label>
+                                <select name="numero_creditos" id="numero_creditos" class="form-select" required>
+                                    <option value="">Seleccione los créditos</option>
+                                    <% for (let i = 1; i <= 4; i++) { %>
+                                        <option value="<%= i %>"><%= i %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="semestre" class="form-label">Semestre</label>
+                                <select name="semestre" id="semestre" class="form-select" required>
+                                    <option value="">Seleccione el semestre</option>
+                                    <% for (let i = 1; i <= 10; i++) { %>
+                                        <option value="<%= i %>"><%= i %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_programa" class="form-label">Programa</label>
+                                <select name="id_programa" id="id_programa" class="form-select" required>
+                                    <option value="">Seleccione un programa</option>
+                                    <% programs.forEach(program => { %>
+                                        <option value="<%= program.id_programa %>"><%= program.nombre_programa %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_docente" class="form-label">Docente</label>
+                                <select name="id_docente" id="id_docente" class="form-select" required>
+                                    <option value="">Seleccione un docente</option>
+                                    <% teachers.forEach(teacher => { %>
+                                        <option value="<%= teacher.id_docente %>"><%= teacher.nombre %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitButton">
+                            <i class="fas fa-save me-1"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-
-    <!-- Tabla de Asignaturas -->
-  
-    <div class="table-responsive">
-    <table id="signatures" class="table table-hover table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th class="text-center">#</th>
-                <th class="text-center">Nombre</th>
-                <th class="text-center">Grupo</th>
-                <th class="text-center">Código Materia</th>
-                <th class="text-center">#Número de Curso</th>
-                <th class="text-center">Semestre</th>
-                <th class="text-center">Docente</th>
-                <th class="text-center">Programa</th>
-                <th class="text-center">Número de Créditos</th>
-                <% if (permittedRoutes.includes('/signatures/update') || permittedRoutes.includes('/signatures/delete')) { %>
-                    <th class="text-center">Acciones</th>
-                <% } %>
-            </tr>
-        </thead>
-        <tbody id="signatures-table-body">
-            <% signatures.forEach((signature, index) => { %>
-            <tr>
-                <td class="text-center"><%= index + 1 %></td>
-                <td class="text-center"><%= signature.nombre %></td>
-                <td class="text-center"><%= signature.grupo %></td>
-                <td class="text-center"><%= signature.codigo_materia %></td>
-                <td class="text-center"><%= signature.numero_curso %></td>
-                <td class="text-center"><%= signature.semestre %></td>
-                <td class="text-center"><%= signature.docente_nombre || 'No asignado' %></td>
-                <td class="text-center"><%= signature.nombre_programa || 'No asignado' %></td>
-                <td class="text-center"><%= signature.numero_creditos %></td>
-                <% if (permittedRoutes.includes('/signatures/update') || permittedRoutes.includes('/signatures/delete')) { %>
-                    <td class="text-center">
-                        <% if (permittedRoutes.includes('/signatures/update')) { %>
-                            <button type="button" class="btn btn-primary btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#signatureModal" data-id="<%= signature.id_asignatura %>">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                        <% } %>
-                        <% if (permittedRoutes.includes('/signatures/delete')) { %>
-                            <button 
-                                class="btn btn-danger btn-sm delete-btn" 
-                                data-id="<%= signature.id_asignatura %>" 
-                                data-entity="signatures">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        <% } %>
-                    </td>
-                <% } %>
-            </tr>
-            <% }) %>
-        </tbody>
-    </table>
 </div>
-
 
 <script>
     new DataTable('#signatures', {
