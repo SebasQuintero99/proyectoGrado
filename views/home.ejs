@@ -1,39 +1,75 @@
-<h1>Dashboard</h1>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-body">
+            <h2 class="card-title text-center mb-4">🏫 Bienvenido al Sistema de Asignación de Laboratorios</h2>
+            <p class="card-text">
+                En la <strong>Universidad Surcolombiana</strong>, la planificación académica es esencial para garantizar una formación de calidad. Sin embargo, el proceso manual de asignación de laboratorios ha generado varios retos como:
+            </p>
+            <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item">⏰ <strong>Cruces de horarios:</strong> Conflictos entre asignaturas del mismo semestre.</li>
+                <li class="list-group-item">🛠️ <strong>Asignación poco dinámica:</strong> Requiere demasiado tiempo y esfuerzo manual.</li>
+                <li class="list-group-item">📉 <strong>Subutilización de recursos:</strong> Algunos laboratorios quedan sin uso adecuado.</li>
+                <li class="list-group-item">❌ <strong>Errores humanos:</strong> Alta probabilidad de fallos en la planificación.</li>
+            </ul>
+            <p class="card-text">
+                Este sistema ha sido diseñado por el <strong>Programa de Ingeniería de Software</strong> con el propósito de resolver estas dificultades mediante la <strong>automatización y optimización</strong> de la asignación de laboratorios a docentes y asignaturas por semestre.
+            </p>
+            <p class="card-text">
+                ✅ <strong>Ventajas del sistema:</strong>
+            </p>
+            <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item">⚙️ Automatización del proceso de asignación.</li>
+                <li class="list-group-item">🔒 Reducción de errores y mayor control.</li>
+                <li class="list-group-item">📊 Mejora en la eficiencia del uso de espacios.</li>
+                <li class="list-group-item">📅 Planificación más rápida y efectiva.</li>
+            </ul>
+            <p class="card-text text-center mt-4">
+                🎓 Este sistema representa un paso hacia la <strong>transformación digital</strong> de la universidad, mejorando la experiencia académica para todos sus usuarios.
+            </p>
+            
+            <h2 class="card-title text-center mb-4">Dashboard</h2>
 
-
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary">
-                <div class="card-body">
-                    <h5 class="card-title">Clases</h5><i class="fa-solid fa-chalkboard-user"></i>
-                    <p class="card-text" id="total-clases"><%= stats.totalClases %></p>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body">
+                                <h5 class="card-title">Clases</h5><i class="fa-solid fa-chalkboard-user"></i>
+                                <p class="card-text" id="total-clases"><%= stats.totalClases %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-danger">
+                            <div class="card-body">
+                                <h5 class="card-title">asignaturas</h5><i class="fa-solid fa-book"></i>
+                                <p class="card-text" id="total-asignaturas"><%= stats.totalAsignaturas %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body">
+                                <h5 class="card-title">docentes</h5><i class="fa-solid fa-user"></i>
+                                <p class="card-text" id="total-docentes"><%= stats.totalDocentes %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3"> 
+                        <div class="card text-white bg-success">
+                            <div class="card-body">
+                                <h5 class="card-title">Laboratorios</h5><i class="fa-solid fa-laptop"></i>
+                                <p class="card-text" id="total-laboratorios"><%= stats.totalLaboratorios %></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-danger">
-                <div class="card-body">
-                    <h5 class="card-title">asignaturas</h5><i class="fa-solid fa-book"></i>
-                    <p class="card-text" id="total-asignaturas"><%= stats.totalAsignaturas %></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning">
-                <div class="card-body">
-                    <h5 class="card-title">docentes</h5><i class="fa-solid fa-user"></i>
-                    <p class="card-text" id="total-docentes"><%= stats.totalDocentes %></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3"> 
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <h5 class="card-title">Laboratorios</h5><i class="fa-solid fa-laptop"></i>
-                    <p class="card-text" id="total-laboratorios"><%= stats.totalLaboratorios %></p>
-                </div>
-            </div>
+            
         </div>
     </div>
+</div>
+
+
+
+
 
