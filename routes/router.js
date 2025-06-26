@@ -206,9 +206,18 @@ router.get('/classes', verifyToken, (req, res) => {
 
 
 
-// Ruta comodín al final para manejar rutas no definidas
+// Rutas protegidas
+router.get('/home', verifyToken, homeController.renderHome);
+router.get('/classes', verifyToken, (req, res) => {
+    res.render('dashboard', { 
+        user: req.user, 
+        content: 'classes'
+    });
+});
+
+// Ruta comodín para rutas no definidas (solo para rutas protegidas)
 router.get('*', verifyToken, (req, res) => {
-    res.redirect('/home'); // Redirige a la página de inicio (home)
+    res.redirect('/home');
 });
 
 // Ruta de acceso denegado

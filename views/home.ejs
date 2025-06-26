@@ -1,73 +1,346 @@
-<div class="container mt-5">
-    <div class="card shadow-lg border-0">
-        <div class="card-body">
-            <h2 class="card-title text-center mb-4">🏫 Bienvenido al Sistema de Asignación de Laboratorios</h2>
-            <p class="card-text">
-                En la <strong>Universidad Surcolombiana</strong>, la planificación académica es esencial para garantizar una formación de calidad. Sin embargo, el proceso manual de asignación de laboratorios ha generado varios retos como:
-            </p>
-            <ul class="list-group list-group-flush mb-4">
-                <li class="list-group-item">⏰ <strong>Cruces de horarios:</strong> Conflictos entre asignaturas del mismo semestre.</li>
-                <li class="list-group-item">🛠️ <strong>Asignación poco dinámica:</strong> Requiere demasiado tiempo y esfuerzo manual.</li>
-                <li class="list-group-item">📉 <strong>Subutilización de recursos:</strong> Algunos laboratorios quedan sin uso adecuado.</li>
-                <li class="list-group-item">❌ <strong>Errores humanos:</strong> Alta probabilidad de fallos en la planificación.</li>
-            </ul>
-            <p class="card-text">
-                Este sistema ha sido diseñado por el <strong>Programa de Ingeniería de Software</strong> con el propósito de resolver estas dificultades mediante la <strong>automatización y optimización</strong> de la asignación de laboratorios a docentes y asignaturas por semestre.
-            </p>
-            <p class="card-text">
-                ✅ <strong>Ventajas del sistema:</strong>
-            </p>
-            <ul class="list-group list-group-flush mb-4">
-                <li class="list-group-item">⚙️ Automatización del proceso de asignación.</li>
-                <li class="list-group-item">🔒 Reducción de errores y mayor control.</li>
-                <li class="list-group-item">📊 Mejora en la eficiencia del uso de espacios.</li>
-                <li class="list-group-item">📅 Planificación más rápida y efectiva.</li>
-            </ul>
-            <p class="card-text text-center mt-4">
-                🎓 Este sistema representa un paso hacia la <strong>transformación digital</strong> de la universidad, mejorando la experiencia académica para todos sus usuarios.
-            </p>
-            
-            <h2 class="card-title text-center mb-4">Dashboard</h2>
+<div class="container mt-4">
+    <!-- Tarjetas de estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-chalkboard-teacher text-primary fs-3"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Clases</h6>
+                        <h3 class="mb-0" id="total-clases"><%= stats.totalClases %></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-danger bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-book text-danger fs-3"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Asignaturas</h6>
+                        <h3 class="mb-0" id="total-asignaturas"><%= stats.totalAsignaturas %></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-chalkboard-teacher text-warning fs-3"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Docentes</h6>
+                        <h3 class="mb-0" id="total-docentes"><%= stats.totalDocentes %></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                        <i class="fas fa-laptop-code text-success fs-3"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Laboratorios</h6>
+                        <h3 class="mb-0" id="total-laboratorios"><%= stats.totalLaboratorios %></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <div class="container mt-4">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="card text-white bg-primary">
-                            <div class="card-body">
-                                <h5 class="card-title">Clases</h5><i class="fa-solid fa-chalkboard-user"></i>
-                                <p class="card-text" id="total-clases"><%= stats.totalClases %></p>
+    <!-- Gráficos -->
+    <div class="row mb-4">
+        <!-- Gráfico de barras - Clases por día -->
+        <div class="col-md-8 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h5 class="card-title mb-0">Distribución de Clases por Día</h5>
+                    <p class="text-muted small mb-0">Cantidad de clases programadas por día de la semana</p>
+                </div>
+                <div class="card-body">
+                    <canvas id="clasesPorDiaChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráfico de dona - Uso de laboratorios -->
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h5 class="card-title mb-0">Uso de Laboratorios</h5>
+                    <p class="text-muted small mb-0">Distribución de clases por tipo de laboratorio</p>
+                </div>
+                <div class="card-body d-flex align-items-center">
+                    <canvas id="usoLaboratoriosChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de bienvenida -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <img src="https://www.usco.edu.co/imagen-institucional/ocre/universidad-surcolombiana.png" alt="Logo Universidad" style="height: 80px;" class="mb-3">
+                        <h2 class="card-title mb-3">Bienvenido al Sistema de Asignación de Laboratorios</h2>
+                        <p class="lead text-muted">Sistema de gestión académica de la Universidad Surcolombiana</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-3">Desafíos actuales</h5>
+                            <div class="d-flex mb-3">
+                                <div class="me-3 text-primary">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Cruce de horarios</h6>
+                                    <p class="text-muted small mb-0">Conflictos entre asignaturas del mismo semestre.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-3">
+                                <div class="me-3 text-danger">
+                                    <i class="fas fa-tools fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Asignación ineficiente</h6>
+                                    <p class="text-muted small mb-0">Proceso manual que requiere demasiado tiempo y esfuerzo.</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-danger">
-                            <div class="card-body">
-                                <h5 class="card-title">Asignaturas</h5><i class="fa-solid fa-book"></i>
-                                <p class="card-text" id="total-asignaturas"><%= stats.totalAsignaturas %></p>
+                        <div class="col-md-6">
+                            <h5 class="mb-3">Nuestras soluciones</h5>
+                            <div class="d-flex mb-3">
+                                <div class="me-3 text-success">
+                                    <i class="fas fa-robot fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Automatización</h6>
+                                    <p class="text-muted small mb-0">Asignación automática de laboratorios.</p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-warning">
-                            <div class="card-body">
-                                <h5 class="card-title">Docentes</h5><i class="fa-solid fa-user"></i>
-                                <p class="card-text" id="total-docentes"><%= stats.totalDocentes %></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3"> 
-                        <div class="card text-white bg-success">
-                            <div class="card-body">
-                                <h5 class="card-title">Laboratorios</h5><i class="fa-solid fa-laptop"></i>
-                                <p class="card-text" id="total-laboratorios"><%= stats.totalLaboratorios %></p>
+                            <div class="d-flex">
+                                <div class="me-3 text-info">
+                                    <i class="fas fa-chart-line fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Optimización</h6>
+                                    <p class="text-muted small mb-0">Uso eficiente de los recursos disponibles.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Script para los gráficos -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Colores para los gráficos
+    const colors = {
+        primary: '#4e73df',
+        success: '#1cc88a',
+        info: '#36b9cc',
+        warning: '#f6c23e',
+        danger: '#e74a3b',
+        secondary: '#858796',
+        light: '#f8f9fc',
+        dark: '#5a5c69'
+    };
+
+    // Gráfico de barras - Clases por día
+    const ctxBar = document.getElementById('clasesPorDiaChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            datasets: [{
+                label: 'Número de Clases',
+                data: [12, 19, 15, 17, 14, 5], // Datos de ejemplo
+                backgroundColor: [
+                    colors.primary,
+                    colors.success,
+                    colors.info,
+                    colors.warning,
+                    colors.danger,
+                    colors.secondary
+                ],
+                borderColor: [
+                    colors.primary,
+                    colors.success,
+                    colors.info,
+                    colors.warning,
+                    colors.danger,
+                    colors.secondary
+                ],
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: colors.dark,
+                    titleFont: {
+                        size: 14,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 14
+                    },
+                    padding: 12,
+                    displayColors: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        display: true,
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        stepSize: 5
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Gráfico de dona - Uso de laboratorios
+    const ctxDoughnut = document.getElementById('usoLaboratoriosChart').getContext('2d');
+    new Chart(ctxDoughnut, {
+        type: 'doughnut',
+        data: {
+            labels: ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Otros'],
+            datasets: [{
+                data: [30, 25, 20, 15, 10], // Datos de ejemplo
+                backgroundColor: [
+                    colors.primary,
+                    colors.success,
+                    colors.info,
+                    colors.warning,
+                    colors.secondary
+                ],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 11
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: colors.dark,
+                    titleFont: {
+                        size: 13,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+
+<!-- Estilos adicionales -->
+<style>
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 1.25rem 1.5rem;
+}
+
+.card-title {
+    color: #4e73df;
+    font-weight: 700;
+}
+
+.text-muted {
+    color: #858796 !important;
+}
+
+.bg-opacity-10 {
+    opacity: 0.1;
+}
+
+.rounded-circle {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animación de carga para los gráficos */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+canvas {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+</style>
 
 
 

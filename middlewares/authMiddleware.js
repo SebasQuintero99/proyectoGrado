@@ -27,6 +27,11 @@ const verifyToken = (req, res, next) => {
         return res.redirect('/login');
     }
 
+    // Si la ruta es la raíz y el usuario está autenticado, redirigir a /home
+    if (req.path === '/') {
+        return res.redirect('/home');
+    }
+
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
