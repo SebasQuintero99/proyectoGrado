@@ -12,10 +12,17 @@
 <body>
     <div class="container-fluid py-4">
         <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">
                     <i class="fas fa-calendar-alt me-2"></i>Gestión de Clases
                 </h4>
+                <div class="d-flex justify-content-end mb-3">
+                    <% if (permittedRoutes.includes('/classes/add')) { %>
+                        <button type="button" id="addClassBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#classModal">
+                            <i class="fas fa-plus me-2"></i>Agregar Clase
+                        </button>
+                    <% } %>
+                </div>
             </div>
             <div class="card-body">
                 <!-- Mensaje de error (opcional) -->
@@ -42,97 +49,7 @@
                     </div>
                 </form>
 
-                <!-- Formulario de Agregar/Editar Clase -->
-                <% if (permittedRoutes.includes('/classes/add')) { %>
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">
-                                <i class="fas fa-calendar-plus me-2"></i><%= classToEdit ? 'Editar Clase' : 'Agregar Nueva Clase' %>
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <form action="<%= classToEdit ? '/classes/update' : '/classes/add' %>" method="POST">
-                                <% if (classToEdit) { %>
-                                    <input type="hidden" name="id_clase" value="<%= classToEdit.id_clase %>">
-                                <% } %>
-                                <input type="hidden" name="id_laboratorio" value="<%= selectedLaboratory %>">
-
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="id_asignatura" class="form-label">Asignatura</label>
-                                        <select name="id_asignatura" id="id_asignatura" class="form-select" required>
-                                            <option value="">Seleccione una asignatura</option>
-                                            <% subjects.forEach(subject => { %>
-                                                <option value="<%= subject.id_asignatura %>" 
-                                                        <%= classToEdit && classToEdit.id_asignatura === subject.id_asignatura ? 'selected' : '' %>>
-                                                    <%= subject.nombre %>
-                                                </option>
-                                            <% }) %>
-                                        </select>
-                                    </div>
-                                    
-                                    <!-- Selector de Semestres -->
-                                    <div class="col-md-6 mb-3">
-                                        <label for="selectedSemester" class="form-label">Semestre</label>
-                                        <select name="selectedSemester" id="selectedSemester" class="form-select w-100">
-                                            <option value="">Todos los semestres</option>
-                                            <% semesters.forEach(semestre => { %>
-                                                <option value="<%= semestre %>" <%= selectedSemester == semestre ? 'selected' : '' %>><%= semestre %></option>
-                                            <% }) %>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-6 mb-3">
-                                        <label for="dia_semana" class="form-label">Día de la Semana</label>
-                                        <select name="dia_semana" id="dia_semana" class="form-select" required>
-                                            <option value="">Seleccione un día</option>
-                                            <option value="Lunes" <%= classToEdit && classToEdit.dia_semana === 'Lunes' ? 'selected' : '' %>>Lunes</option>
-                                            <option value="Martes" <%= classToEdit && classToEdit.dia_semana === 'Martes' ? 'selected' : '' %>>Martes</option>
-                                            <option value="Miércoles" <%= classToEdit && classToEdit.dia_semana === 'Miércoles' ? 'selected' : '' %>>Miércoles</option>
-                                            <option value="Jueves" <%= classToEdit && classToEdit.dia_semana === 'Jueves' ? 'selected' : '' %>>Jueves</option>
-                                            <option value="Viernes" <%= classToEdit && classToEdit.dia_semana === 'Viernes' ? 'selected' : '' %>>Viernes</option>
-                                            <option value="Sábado" <%= classToEdit && classToEdit.dia_semana === 'Sábado' ? 'selected' : '' %>>Sábado</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-6 mb-3">
-                                        <label for="hora_inicio" class="form-label">Hora de Inicio</label>
-                                        <input 
-                                            type="time" 
-                                            name="hora_inicio" 
-                                            id="hora_inicio" 
-                                            class="form-control" 
-                                            value="<%= classToEdit ? classToEdit.hora_inicio : '' %>" 
-                                            required>
-                                    </div>
-
-                                    <div class="col-md-6 mb-3">
-                                        <label for="hora_fin" class="form-label">Hora de Fin</label>
-                                        <input 
-                                            type="time" 
-                                            name="hora_fin" 
-                                            id="hora_fin" 
-                                            class="form-control" 
-                                            value="<%= classToEdit ? classToEdit.hora_fin : '' %>" 
-                                            required>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex justify-content-end">
-                                    <% if (classToEdit) { %>
-                                        <a href="/classes?selectedLaboratory=<%= selectedLaboratory %>&selectedSemester=<%= selectedSemester %>" class="btn btn-secondary me-2">
-                                            <i class="fas fa-times me-1"></i> Cancelar
-                                        </a>
-                                    <% } %>
-                                    <button type="submit" class="btn <%= classToEdit ? 'btn-warning' : 'btn-primary' %>">
-                                        <i class="fas <%= classToEdit ? 'fa-save' : 'fa-plus-circle' %> me-1"></i>
-                                        <%= classToEdit ? 'Guardar Cambios' : 'Agregar Clase' %>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                <% } %>
+                <!-- Botón de Agregar Clase se movió al encabezado de la tarjeta -->
 
                 <!-- Tabla de Clases -->
                 <div class="table-responsive">
@@ -165,9 +82,16 @@
                                                 <div class="class-card" style="--class-color: <%= clase.asignatura_color || '#f0f0f0' %>;">
                                                     <div class="class-card-header">
                                                         <% if (permittedRoutes.includes('/classes/update')) { %>
-                                                            <a href="/classes?editId=<%= clase.id_clase %>" class="btn btn-primary btn-sm">
+                                                            <button type="button" class="btn btn-primary btn-sm edit-class-btn" 
+                                                                    onclick="editClass(this)"
+                                                                    data-id="<%= clase.id_clase %>" 
+                                                                    data-id-asignatura="<%= clase.id_asignatura %>"
+                                                                    data-semestre="<%= clase.semestre %>"
+                                                                    data-dia-semana="<%= clase.dia_semana %>"
+                                                                    data-hora-inicio="<%= clase.hora_inicio %>"
+                                                                    data-hora-fin="<%= clase.hora_fin %>">
                                                                 <i class="fa-solid fa-pen-to-square"></i>
-                                                            </a>
+                                                            </button>
                                                         <% } %>
                                                         <% if (permittedRoutes.includes('/classes/delete')) { %>
                                                             <button 
@@ -211,7 +135,104 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
+    <!-- Modal para Agregar/Editar Clase -->
+    <div class="modal fade" id="classModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="classModalLabel">Agregar Clase</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="classForm" action="/classes/add" method="POST">
+                        <input type="hidden" name="id_clase" id="id_clase">
+                        <input type="hidden" name="id_laboratorio" value="<%= selectedLaboratory %>">
+                        
+                        <div class="mb-3">
+                            <label for="id_asignatura" class="form-label">Asignatura</label>
+                            <select name="id_asignatura" id="id_asignatura" class="form-select" required>
+                                <option value="">Seleccione una asignatura</option>
+                                <% subjects.forEach(subject => { %>
+                                    <option value="<%= subject.id_asignatura %>">
+                                        <%= subject.nombre %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="semestre" class="form-label">Semestre</label>
+                            <select name="semestre" id="semestre" class="form-select" required>
+                                <option value="">Seleccione un semestre</option>
+                                <% semesters.forEach(semestre => { %>
+                                    <option value="<%= semestre %>"><%= semestre %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="dia_semana" class="form-label">Día de la Semana</label>
+                            <select name="dia_semana" id="dia_semana" class="form-select" required>
+                                <option value="">Seleccione un día</option>
+                                <option value="Lunes">Lunes</option>
+                                <option value="Martes">Martes</option>
+                                <option value="Miércoles">Miércoles</option>
+                                <option value="Jueves">Jueves</option>
+                                <option value="Viernes">Viernes</option>
+                                <option value="Sábado">Sábado</option>
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="hora_inicio" class="form-label">Hora de Inicio</label>
+                                <input type="time" name="hora_inicio" id="hora_inicio" class="form-control" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="hora_fin" class="form-label">Hora de Fin</label>
+                                <input type="time" name="hora_fin" id="hora_fin" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Función para manejar la edición de clase (debe estar en el ámbito global)
+        function editClass(button) {
+            const $button = $(button);
+            const id = $button.data('id');
+            const idAsignatura = $button.data('id-asignatura');
+            const semestre = $button.data('semestre');
+            const diaSemana = $button.data('dia-semana');
+            const horaInicio = $button.data('hora-inicio');
+            const horaFin = $button.data('hora-fin');
+            
+            console.log('Editando clase:', {id, idAsignatura, semestre, diaSemana, horaInicio, horaFin});
+            
+            // Llenar el formulario con los datos de la clase
+            $('#classForm').attr('action', '/classes/update');
+            $('#classModalLabel').text('Editar Clase');
+            $('#id_clase').val(id);
+            $('#id_asignatura').val(idAsignatura);
+            $('#semestre').val(semestre);
+            $('#dia_semana').val(diaSemana);
+            $('#hora_inicio').val(horaInicio);
+            $('#hora_fin').val(horaFin);
+            
+            // Mostrar el modal
+            const modal = new bootstrap.Modal(document.getElementById('classModal'));
+            modal.show();
+        }
+
         document.getElementById('selectedSemester').addEventListener('change', function() {
             const semester = this.value;
             const urlParams = new URLSearchParams(window.location.search);
@@ -227,6 +248,60 @@
 
         // Inicializar DataTable
         $(document).ready(function() {
+            // Inicializar DataTable
+            var table = $('#classes').DataTable({
+                layout: {
+                    top: "lBfrtip",
+                    bottom: "ip"
+                },
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="fas fa-file-excel"></i> Excel',
+                        titleAttr: 'Exportar a Excel',
+                        className: 'btn btn-success btn-sm me-1'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="fas fa-file-pdf"></i> PDF',
+                        titleAttr: 'Exportar a PDF',
+                        className: 'btn btn-danger btn-sm me-1'
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fas fa-print"></i> Imprimir',
+                        titleAttr: 'Imprimir',
+                        className: 'btn btn-primary btn-sm'
+                    }
+                ],
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-MX.json'
+                },
+                pageLength: 25,
+                responsive: true,
+                order: [[0, 'asc']]
+            });
+
+
+            // Limpiar el formulario cuando se cierre el modal
+            $('#classModal').on('hidden.bs.modal', function () {
+                $('#classForm')[0].reset();
+                $('#classForm').attr('action', '/classes/add');
+                $('#classModalLabel').text('Agregar Clase');
+                $('#id_clase').val('');
+            });
+
+            // Manejar clic en el botón de agregar clase
+            $('#addClassBtn').on('click', function() {
+                $('#classForm')[0].reset();
+                $('#classForm').attr('action', '/classes/add');
+                $('#classModalLabel').text('Agregar Clase');
+                $('#id_clase').val('');
+            });
+
+            // La función editClass ahora está definida en el ámbito global
+
+            // Inicializar DataTable
             new DataTable('#classes', {
                 paging: false,
                 layout: {
