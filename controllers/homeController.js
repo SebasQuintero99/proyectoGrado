@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-
 exports.renderHome = async (req, res) => {
     try {
         // Consulta para obtener estadísticas

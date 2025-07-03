@@ -1,0 +1,42 @@
+/* Estilos generales */
+.home-container {
+    margin-top: 2rem;
+}
+
+/* Efectos hover para tarjetas */
+.card-hover-effect {
+    transition: all 0.3s ease;
+}
+
+.card-hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para encabezados de tarjetas */
+.card-header-custom {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 1.25rem 1.5rem;
+}
+
+/* Estilos para íconos circulares */
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Textos */
+.text-dark-custom {
+    color: #212529 !important;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
