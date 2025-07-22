@@ -255,11 +255,11 @@ exports.deleteClass = async (req, res) => {
 
     try {
         await db.query('DELETE FROM clase WHERE id_clase = ?', [id]);
-        req.session.success = 'Clase eliminada exitosamente.';
-        res.redirect('/classes');
+        // Éxito: Devolver JSON para que el fetch lo procese
+        res.json({ success: true, message: 'Clase eliminada exitosamente.' });
     } catch (error) {
         console.error('Error al eliminar la clase:', error);
-        req.session.error = 'Hubo un error al eliminar la clase.';
-        res.redirect('/classes');
+        // Error: Devolver un JSON con el error
+        res.status(500).json({ success: false, message: 'Hubo un error al eliminar la clase.' });
     }
 };
