@@ -37,7 +37,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label for="id_laboratorio" class="form-label">Laboratorio</label>
-                            <select name="selectedLaboratory" id="id_laboratorio" class="form-select w-100" onchange="document.getElementById('filterForm').submit()" required>
+                            <select name="selectedLaboratory" id="id_laboratorio" class="form-select w-50" onchange="document.getElementById('filterForm').submit()" required>
                                 <option value="">Seleccione un laboratorio</option>
                                 <% laboratories.forEach(lab => { %>
                                     <option value="<%= lab.id_laboratorio %>" <%= selectedLaboratory == lab.id_laboratorio ? 'selected' : '' %>>
@@ -135,198 +135,192 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
-    <!-- Modal para Agregar/Editar Clase -->
-    <div class="modal fade" id="classModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="classModalLabel">Agregar Clase</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="classForm" action="/classes/add" method="POST">
-                        <input type="hidden" name="id_clase" id="id_clase">
-                        <input type="hidden" name="id_laboratorio" value="<%= selectedLaboratory %>">
-                        
-                        <div class="mb-3">
-                            <label for="id_asignatura" class="form-label">Asignatura</label>
-                            <select name="id_asignatura" id="id_asignatura" class="form-select" required>
-                                <option value="">Seleccione una asignatura</option>
-                                <% subjects.forEach(subject => { %>
-                                    <option value="<%= subject.id_asignatura %>">
-                                        <%= subject.nombre %>
-                                    </option>
-                                <% }) %>
-                            </select>
+<!-- Modal para Agregar/Editar Clase -->
+<div class="modal fade" id="classModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="classModalLabel">Agregar Clase</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="classForm" action="/classes/add" method="POST">
+                    <input type="hidden" name="id_clase" id="id_clase">
+                    
+                    <div class="mb-3">
+                        <label for="id_laboratorio" class="form-label">Laboratorio</label>
+                        <select name="id_laboratorio" id="id_laboratorio" class="form-select" required>
+                            <option value="">Seleccione un laboratorio</option>
+                            <% laboratories.forEach(lab => { %>
+                                <option value="<%= lab.id_laboratorio %>" <%= selectedLaboratory == lab.id_laboratorio ? 'selected' : '' %>>
+                                    <%= lab.nombre %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_asignatura" class="form-label">Asignatura</label>
+                        <select name="id_asignatura" id="id_asignatura" class="form-select" required>
+                            <option value="">Seleccione una asignatura</option>
+                            <% subjects.forEach(subject => { %>
+                                <option value="<%= subject.id_asignatura %>">
+                                    <%= subject.nombre %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="dia_semana" class="form-label">Día de la Semana</label>
+                        <select name="dia_semana" id="dia_semana" class="form-select" required>
+                            <option value="">Seleccione un día</option>
+                            <option value="Lunes">Lunes</option>
+                            <option value="Martes">Martes</option>
+                            <option value="Miércoles">Miércoles</option>
+                            <option value="Jueves">Jueves</option>
+                            <option value="Viernes">Viernes</option>
+                            <option value="Sábado">Sábado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="hora_inicio" class="form-label">Hora de Inicio</label>
+                            <input type="time" name="hora_inicio" id="hora_inicio" class="form-control" required>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="semestre" class="form-label">Semestre</label>
-                            <select name="semestre" id="semestre" class="form-select" required>
-                                <option value="">Seleccione un semestre</option>
-                                <% semesters.forEach(semestre => { %>
-                                    <option value="<%= semestre %>"><%= semestre %></option>
-                                <% }) %>
-                            </select>
+                        <div class="col-md-6 mb-3">
+                            <label for="hora_fin" class="form-label">Hora de Fin</label>
+                            <input type="time" name="hora_fin" id="hora_fin" class="form-control" required>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="dia_semana" class="form-label">Día de la Semana</label>
-                            <select name="dia_semana" id="dia_semana" class="form-select" required>
-                                <option value="">Seleccione un día</option>
-                                <option value="Lunes">Lunes</option>
-                                <option value="Martes">Martes</option>
-                                <option value="Miércoles">Miércoles</option>
-                                <option value="Jueves">Jueves</option>
-                                <option value="Viernes">Viernes</option>
-                                <option value="Sábado">Sábado</option>
-                            </select>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="hora_inicio" class="form-label">Hora de Inicio</label>
-                                <input type="time" name="hora_inicio" id="hora_inicio" class="form-control" required>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="hora_fin" class="form-label">Hora de Fin</label>
-                                <input type="time" name="hora_fin" id="hora_fin" class="form-control" required>
-                            </div>
-                        </div>
-                        
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Función para manejar la edición de clase (debe estar en el ámbito global)
-        function editClass(button) {
-            const $button = $(button);
-            const id = $button.data('id');
-            const idAsignatura = $button.data('id-asignatura');
-            const semestre = $button.data('semestre');
-            const diaSemana = $button.data('dia-semana');
-            const horaInicio = $button.data('hora-inicio');
-            const horaFin = $button.data('hora-fin');
-            
-            console.log('Editando clase:', {id, idAsignatura, semestre, diaSemana, horaInicio, horaFin});
-            
-            // Llenar el formulario con los datos de la clase
-            $('#classForm').attr('action', '/classes/update');
-            $('#classModalLabel').text('Editar Clase');
-            $('#id_clase').val(id);
-            $('#id_asignatura').val(idAsignatura);
-            $('#semestre').val(semestre);
-            $('#dia_semana').val(diaSemana);
-            $('#hora_inicio').val(horaInicio);
-            $('#hora_fin').val(horaFin);
-            
-            // Mostrar el modal
-            const modal = new bootstrap.Modal(document.getElementById('classModal'));
-            modal.show();
+<script>
+    // Función para manejar la edición de clase
+    function editClass(button) {
+        const $button = $(button);
+        const id = $button.data('id');
+        const idAsignatura = $button.data('id-asignatura');
+        const idLaboratorio = $button.data('id-laboratorio');
+        const diaSemana = $button.data('dia-semana');
+        const horaInicio = $button.data('hora-inicio');
+        const horaFin = $button.data('hora-fin');
+        
+        console.log('Editando clase:', { id, idAsignatura, idLaboratorio, diaSemana, horaInicio, horaFin });
+        
+        // Llenar el formulario con los datos de la clase
+        $('#classForm').attr('action', '/classes/update');
+        $('#classModalLabel').text('Editar Clase');
+        $('#id_clase').val(id);
+        $('#id_laboratorio').val(idLaboratorio);
+        $('#id_asignatura').val(idAsignatura);
+        $('#dia_semana').val(diaSemana);
+        $('#hora_inicio').val(horaInicio);
+        $('#hora_fin').val(horaFin);
+        
+        // Mostrar el modal
+        const modal = new bootstrap.Modal(document.getElementById('classModal'));
+        modal.show();
+    }
+
+    // Manejar cambio de semestre en el filtro
+    document.getElementById('selectedSemester').addEventListener('change', function() {
+        const semester = this.value;
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (semester) {
+            urlParams.set('selectedSemester', semester);
+        } else {
+            urlParams.delete('selectedSemester');
         }
 
-        document.getElementById('selectedSemester').addEventListener('change', function() {
-            const semester = this.value;
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            if (semester) {
-                urlParams.set('selectedSemester', semester);
-            } else {
-                urlParams.delete('selectedSemester');
+        window.location.search = urlParams.toString();
+    });
+
+    // Inicializar DataTable y eventos del modal
+    $(document).ready(function() {
+        // Inicializar DataTable
+        var table = $('#classes').DataTable({
+            layout: {
+                top: "lBfrtip",
+                bottom: "ip"
+            },
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="fas fa-file-excel"></i> Excel',
+                    titleAttr: 'Exportar a Excel',
+                    className: 'btn btn-success btn-sm me-1'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="fas fa-file-pdf"></i> PDF',
+                    titleAttr: 'Exportar a PDF',
+                    className: 'btn btn-danger btn-sm me-1'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fas fa-print"></i> Imprimir',
+                    titleAttr: 'Imprimir',
+                    className: 'btn btn-primary btn-sm'
+                }
+            ],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-MX.json'
+            },
+            pageLength: 25,
+            responsive: true,
+            order: [[0, 'asc']]
+        });
+
+        // Limpiar el formulario cuando se cierre el modal
+        $('#classModal').on('hidden.bs.modal', function () {
+            $('#classForm')[0].reset();
+            $('#classForm').attr('action', '/classes/add');
+            $('#classModalLabel').text('Agregar Clase');
+            $('#id_clase').val('');
+        });
+
+        // Manejar clic en el botón de agregar clase
+        $('#addClassBtn').on('click', function() {
+            $('#classForm')[0].reset();
+            $('#classForm').attr('action', '/classes/add');
+            $('#classModalLabel').text('Agregar Clase');
+            $('#id_clase').val('');
+        });
+
+        // Validación antes de enviar el formulario
+        $('#classForm').on('submit', function(e) {
+            const idLaboratorio = $('#id_laboratorio').val();
+            const idAsignatura = $('#id_asignatura').val();
+            const diaSemana = $('#dia_semana').val();
+            const horaInicio = $('#hora_inicio').val();
+            const horaFin = $('#hora_fin').val();
+
+            if (!idLaboratorio || !idAsignatura || !diaSemana || !horaInicio || !horaFin) {
+                e.preventDefault();
+                alert('Todos los campos son obligatorios.');
+                return;
             }
 
-            window.location.search = urlParams.toString();
+            if (horaInicio >= horaFin) {
+                e.preventDefault();
+                alert('La hora de inicio debe ser anterior a la hora de fin.');
+                return;
+            }
         });
-
-        // Inicializar DataTable
-        $(document).ready(function() {
-            // Inicializar DataTable
-            var table = $('#classes').DataTable({
-                layout: {
-                    top: "lBfrtip",
-                    bottom: "ip"
-                },
-                buttons: [
-                    {
-                        extend: 'excelHtml5',
-                        text: '<i class="fas fa-file-excel"></i> Excel',
-                        titleAttr: 'Exportar a Excel',
-                        className: 'btn btn-success btn-sm me-1'
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        text: '<i class="fas fa-file-pdf"></i> PDF',
-                        titleAttr: 'Exportar a PDF',
-                        className: 'btn btn-danger btn-sm me-1'
-                    },
-                    {
-                        extend: 'print',
-                        text: '<i class="fas fa-print"></i> Imprimir',
-                        titleAttr: 'Imprimir',
-                        className: 'btn btn-primary btn-sm'
-                    }
-                ],
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-MX.json'
-                },
-                pageLength: 25,
-                responsive: true,
-                order: [[0, 'asc']]
-            });
-
-
-            // Limpiar el formulario cuando se cierre el modal
-            $('#classModal').on('hidden.bs.modal', function () {
-                $('#classForm')[0].reset();
-                $('#classForm').attr('action', '/classes/add');
-                $('#classModalLabel').text('Agregar Clase');
-                $('#id_clase').val('');
-            });
-
-            // Manejar clic en el botón de agregar clase
-            $('#addClassBtn').on('click', function() {
-                $('#classForm')[0].reset();
-                $('#classForm').attr('action', '/classes/add');
-                $('#classModalLabel').text('Agregar Clase');
-                $('#id_clase').val('');
-            });
-
-            // La función editClass ahora está definida en el ámbito global
-
-            // Inicializar DataTable
-            new DataTable('#classes', {
-                paging: false,
-                layout: {
-                    topStart: {
-                        buttons: [
-                            {
-                                extend: 'excelHtml5',
-                                text: '<i class="fa fa-file-excel-o"></i> Excel',
-                                titleAttr: 'Excel',
-                                className: 'btn btn-success'
-                            },
-                            {
-                                extend: 'pdfHtml5',
-                                text: '<i class="fa fa-file-pdf-o"></i> PDF',
-                                titleAttr: 'PDF',
-                                className: 'btn btn-danger'
-                            }
-                        ]
-                    }
-                },
-                language: { 
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json' 
-                }
-            });
-        });
-    </script>
+    });
+</script>
 </body>
 </html>

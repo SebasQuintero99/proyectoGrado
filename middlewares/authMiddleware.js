@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const accessControl = require('../config/accessControl.json');
 
 const verifyToken = (req, res, next) => {
-    const excludedRoutes = ['/login', '/register', '/favicon.ico', '/css', '/js', '/logout'];
+    const excludedRoutes = ['/login', '/register', '/favicon.ico', '/css', '/js', '/logout', '/.well-known'];
 
     if (excludedRoutes.some(route => req.path.startsWith(route))) {
         return next();
