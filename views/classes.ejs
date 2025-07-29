@@ -134,6 +134,42 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Script de inicialización DataTable para la tabla de clases -->
+    <script>
+      $(function() {
+        const dt = $('#classes').DataTable({
+          dom: 'Bfrtip',
+          buttons: [
+            {
+              extend: 'excelHtml5',
+              text: '<i class="fas fa-file-excel"></i> Excel',
+              titleAttr: 'Exportar a Excel',
+              className: 'btn btn-success btn-sm me-1'
+            },
+            {
+              extend: 'pdfHtml5',
+              text: '<i class="fas fa-file-pdf"></i> PDF',
+              titleAttr: 'Exportar a PDF',
+              className: 'btn btn-danger btn-sm me-1'
+            }
+          ],
+          pageLength: 25,
+          responsive: true,
+          order: [[0, 'asc']],
+          initComplete: function () {
+            // Mover el selector de cantidad de registros al contenedor de paginación
+            const lengthMenu = $('#classes_length');
+            const paginate = $('#classes_paginate');
+            if (lengthMenu.length && paginate.length) {
+              lengthMenu.addClass('d-inline-block me-3');
+              paginate.before(lengthMenu);
+            }
+          }
+        });
+      });
+    </script>
 
 <!-- Modal para Agregar/Editar Clase -->
 <div class="modal fade" id="classModal" tabindex="-1" aria-labelledby="classModalLabel" aria-hidden="true">
@@ -288,8 +324,9 @@
             $('#id_clase').val('');
         });
 
-        // Validación antes de enviar el formulario
-        $('#classForm').on('submit', function(e) {
+        // Envío del formulario con validación y SweetAlert
+        $('#classForm').on('submit', async function(e) {
+            e.preventDefault();
             const idLaboratorio = $('#id_laboratorio_modal').val();
             const idAsignatura = $('#id_asignatura').val();
             const diaSemana = $('#dia_semana').val();
@@ -297,18 +334,39 @@
             const horaFin = $('#hora_fin').val();
 
             if (!idLaboratorio || !idAsignatura || !diaSemana || !horaInicio || !horaFin) {
-                e.preventDefault();
-                alert('Todos los campos son obligatorios.');
+                await Swal.fire('Campos faltantes', 'Todos los campos son obligatorios.', 'warning');
                 return;
             }
 
             if (horaInicio >= horaFin) {
-                e.preventDefault();
-                alert('La hora de inicio debe ser anterior a la hora de fin.');
+                await Swal.fire('Horario inválido', 'La hora de inicio debe ser anterior a la hora de fin.', 'warning');
                 return;
             }
+
+            // Mostrar SweetAlert de éxito y luego enviar el formulario
+            const isUpdate = !!$('#id_clase').val();
+            const title = isUpdate ? '¡Actualizado!' : '¡Agregado!';
+            const text = isUpdate ? 'La clase ha sido actualizada correctamente.' : 'La clase ha sido agregada correctamente.';
+
+            Swal.fire({
+                title,
+                text,
+                icon: 'success',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    e.target.submit();
+                }
+            });
         });
     });
+
+
+    
 </script>
 </body>
 </html>
