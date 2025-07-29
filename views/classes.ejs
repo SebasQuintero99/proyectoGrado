@@ -149,7 +149,7 @@
                     
                     <div class="mb-3">
                         <label for="id_laboratorio" class="form-label">Laboratorio</label>
-                        <select name="id_laboratorio" id="id_laboratorio" class="form-select" required>
+                        <select name="id_laboratorio" id="id_laboratorio_modal" class="form-select" required>
                             <option value="">Seleccione un laboratorio</option>
                             <% laboratories.forEach(lab => { %>
                                 <option value="<%= lab.id_laboratorio %>" <%= selectedLaboratory == lab.id_laboratorio ? 'selected' : '' %>>
@@ -160,11 +160,21 @@
                     </div>
                     
                     <div class="mb-3">
+                        <label for="modalSemester" class="form-label">Semestre</label>
+                        <select id="modalSemester" class="form-select">
+                            <option value="">Seleccione semestre</option>
+                            <% semesters.forEach(sem => { %>
+                                <option value="<%= sem %>"><%= sem %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
                         <label for="id_asignatura" class="form-label">Asignatura</label>
                         <select name="id_asignatura" id="id_asignatura" class="form-select" required>
                             <option value="">Seleccione una asignatura</option>
                             <% subjects.forEach(subject => { %>
-                                <option value="<%= subject.id_asignatura %>">
+                                <option value="<%= subject.id_asignatura %>" data-semestre="<%= subject.semestre %>">
                                     <%= subject.nombre %>
                                 </option>
                             <% }) %>
@@ -223,9 +233,12 @@
         $('#classForm').attr('action', '/classes/update');
         $('#classModalLabel').text('Editar Clase');
         $('#id_clase').val(id);
-        $('#id_laboratorio').val(idLaboratorio);
+        $('#id_laboratorio_modal').val(idLaboratorio);
         $('#id_asignatura').val(idAsignatura);
         $('#dia_semana').val(diaSemana);
+        // Establecer semestre en selector modal y filtrar asignaturas
+        $('#modalSemester').val($button.data('semestre'));
+        $('#modalSemester').trigger('change');
         $('#hora_inicio').val(horaInicio);
         $('#hora_fin').val(horaFin);
         
@@ -234,55 +247,27 @@
         modal.show();
     }
 
-    // Manejar cambio de semestre en el filtro
-    document.getElementById('selectedSemester').addEventListener('change', function() {
-        const semester = this.value;
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        if (semester) {
-            urlParams.set('selectedSemester', semester);
-        } else {
-            urlParams.delete('selectedSemester');
-        }
 
-        window.location.search = urlParams.toString();
+
+    // Filtrar asignaturas por semestre dentro del modal
+    $('#modalSemester').on('change', function() {
+        const sem = $(this).val();
+        $('#id_asignatura option').each(function() {
+            const optionSem = $(this).data('semestre');
+            if (!optionSem) return; // primera opción "Seleccione"
+            if (!sem || optionSem == sem) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+        $('#id_asignatura').val('');
     });
 
     // Inicializar DataTable y eventos del modal
     $(document).ready(function() {
         // Inicializar DataTable
-        var table = $('#classes').DataTable({
-            layout: {
-                top: "lBfrtip",
-                bottom: "ip"
-            },
-            buttons: [
-                {
-                    extend: 'excelHtml5',
-                    text: '<i class="fas fa-file-excel"></i> Excel',
-                    titleAttr: 'Exportar a Excel',
-                    className: 'btn btn-success btn-sm me-1'
-                },
-                {
-                    extend: 'pdfHtml5',
-                    text: '<i class="fas fa-file-pdf"></i> PDF',
-                    titleAttr: 'Exportar a PDF',
-                    className: 'btn btn-danger btn-sm me-1'
-                },
-                {
-                    extend: 'print',
-                    text: '<i class="fas fa-print"></i> Imprimir',
-                    titleAttr: 'Imprimir',
-                    className: 'btn btn-primary btn-sm'
-                }
-            ],
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-MX.json'
-            },
-            pageLength: 25,
-            responsive: true,
-            order: [[0, 'asc']]
-        });
+       
 
         // Limpiar el formulario cuando se cierre el modal
         $('#classModal').on('hidden.bs.modal', function () {
@@ -294,6 +279,9 @@
 
         // Manejar clic en el botón de agregar clase
         $('#addClassBtn').on('click', function() {
+            // Preseleccionar laboratorio si está filtrado arriba
+            const currentLab = $('#filterForm #id_laboratorio').val();
+            $('#id_laboratorio_modal').val(currentLab || '');
             $('#classForm')[0].reset();
             $('#classForm').attr('action', '/classes/add');
             $('#classModalLabel').text('Agregar Clase');
@@ -302,7 +290,7 @@
 
         // Validación antes de enviar el formulario
         $('#classForm').on('submit', function(e) {
-            const idLaboratorio = $('#id_laboratorio').val();
+            const idLaboratorio = $('#id_laboratorio_modal').val();
             const idAsignatura = $('#id_asignatura').val();
             const diaSemana = $('#dia_semana').val();
             const horaInicio = $('#hora_inicio').val();
