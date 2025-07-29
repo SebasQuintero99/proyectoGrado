@@ -25,12 +25,7 @@ app.use(session({
     saveUninitialized: process.env.SESSION_SAVE_UNINITIALIZED === 'true' // Convertir a booleano
 }));
 
-// Middleware de autenticación
-// Esto debe aplicarse solo a rutas protegidas, no de manera global
-// Si se requiere global, eliminar este comentario y mantenerlo aquí
-// app.use(verifyToken);
 
-// Configuración de EJS
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
