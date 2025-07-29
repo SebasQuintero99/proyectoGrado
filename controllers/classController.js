@@ -127,7 +127,7 @@ exports.addClass = async (req, res) => {
 
     try {
         const [asignatura] = await db.query(`
-            SELECT id_asignatura, nombre 
+            SELECT id_asignatura, nombre, id_docente 
             FROM asignatura 
             WHERE id_asignatura = ?`, [id_asignatura]);
 
@@ -166,6 +166,28 @@ exports.addClass = async (req, res) => {
             return res.redirect('/classes');
         }
 
+        // Validar conflicto de docente
+        const docenteId = asignatura[0].id_docente;
+        if (docenteId) {
+            const [teacherConflicts] = await db.query(`
+                SELECT clase.id_clase, asignatura.nombre AS asignatura_nombre,
+                       clase.hora_inicio, clase.hora_fin
+                FROM clase
+                INNER JOIN asignatura ON clase.id_asignatura = asignatura.id_asignatura
+                WHERE asignatura.id_docente = ?
+                  AND clase.dia_semana = ?
+                  AND (
+                      (clase.hora_inicio <= ? AND clase.hora_fin > ?) OR 
+                      (clase.hora_inicio < ? AND clase.hora_fin >= ?)
+                  )
+            `, [docenteId, dia_semana, hora_fin, hora_inicio, hora_fin, hora_inicio]);
+            if (teacherConflicts.length > 0) {
+                const tc = teacherConflicts[0];
+                req.session.error = `El docente asignado ya dicta la asignatura "${tc.asignatura_nombre}" en el mismo horario de ${tc.hora_inicio} a ${tc.hora_fin}.`;
+                return res.redirect('/classes');
+            }
+        }
+
         await db.query(`
             INSERT INTO clase (id_asignatura, id_laboratorio, dia_semana, hora_inicio, hora_fin)
             VALUES (?, ?, ?, ?, ?)
@@ -195,7 +217,7 @@ exports.updateClass = async (req, res) => {
 
     try {
         const [asignatura] = await db.query(`
-            SELECT id_asignatura, nombre 
+            SELECT id_asignatura, nombre, id_docente 
             FROM asignatura 
             WHERE id_asignatura = ?`, [id_asignatura]);
 
@@ -233,6 +255,29 @@ exports.updateClass = async (req, res) => {
             const conflict = conflicts[0];
             req.session.error = `No se puede actualizar la clase porque se solapa con la asignatura "${conflict.asignatura_nombre}" en el laboratorio "${conflict.laboratorio_nombre}" de ${conflict.hora_inicio} a ${conflict.hora_fin}.`;
             return res.redirect('/classes');
+        }
+
+        // Validar conflicto de docente
+        const docenteId2 = asignatura[0].id_docente;
+        if (docenteId2) {
+            const [teacherConflicts2] = await db.query(`
+                SELECT clase.id_clase, asignatura.nombre AS asignatura_nombre,
+                       clase.hora_inicio, clase.hora_fin
+                FROM clase
+                INNER JOIN asignatura ON clase.id_asignatura = asignatura.id_asignatura
+                WHERE asignatura.id_docente = ?
+                  AND clase.dia_semana = ?
+                  AND clase.id_clase != ?
+                  AND (
+                      (clase.hora_inicio <= ? AND clase.hora_fin > ?) OR 
+                      (clase.hora_inicio < ? AND clase.hora_fin >= ?)
+                  )
+            `, [docenteId2, dia_semana, id_clase, hora_fin, hora_inicio, hora_fin, hora_inicio]);
+            if (teacherConflicts2.length > 0) {
+                const tc = teacherConflicts2[0];
+                req.session.error = `El docente asignado ya dicta la asignatura "${tc.asignatura_nombre}" en el mismo horario de ${tc.hora_inicio} a ${tc.hora_fin}.`;
+                return res.redirect('/classes');
+            }
         }
 
         await db.query(`
